@@ -1,0 +1,122 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Tables {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">IOT Protocol Database</h4>
+              <p class="category"> Here is a subtitle for this table</p>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive" data-example-id="hoverable-table" style="height: 500px;">
+              <table class="table tablesorter " id="">
+                <thead class=" text-primary">
+                  <tr>
+                    <th class="text-center">
+                      No
+                    </th>
+                    <th class="text-center">
+                      Time
+                    </th>
+                    <th class="text-center">
+                      SourceIP
+                    </th>
+                      <th class="text-center">
+                      DesIP
+                    </th>
+                      <th class="text-center">
+                      Protocol
+                    </th>
+                      <th class="text-center">
+                      len
+                    </th>
+                    <th class="text-center">
+                      data
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for count, pcap in mqtt_pcaps.items() %}
+                <tr data-toggle="modal" data-target="#myModal">
+                <th scope="row" class="text-center" id="id">{{ count }}</th>
+                    <td class="text-nowrap text-center">{{ pcap['time'] }}</td>
+                    <td class="text-center">{{ pcap['Source'] }}</td>
+                    <td class="text-center">{{ pcap['Destination'] }}</td>
+                    <td class="text-center text-nowrap">{{ pcap['Procotol'] }}</td>
+                    <td class="text-center text-nowrap">{{ pcap['len'] }}</td>
+                    <td class="text-left text-nowrap">{{ pcap['others'] }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="card  card-plain">
+          <div class="card-header">
+            <h4 class="card-title"> Web Protocol Database</h4>
+            <p class="category"> Here is a subtitle for this table</p>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive" data-example-id="hoverable-table" style="height: 700px;">
+              <table class="table tablesorter ">
+                <thead class=" text-primary">
+                  <tr>
+                    <th class="text-center">
+                      No
+                    </th>
+                    <th class="text-center">
+                      Time
+                    </th>
+                    <th class="text-center">
+                      SourceIP
+                    </th>
+                      <th class="text-center">
+                      DesIP
+                    </th>
+                      <th class="text-center">
+                      Protocol
+                    </th>
+                      <th class="text-center">
+                      len
+                    </th>
+                    <th class="text-center">
+                      Info
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for count, pcap in pcaps.items() %}
+                <tr data-toggle="modal" data-target="#myModal">
+                    <th scope="row" class="text-center" id="id" >{{ count }}</th>
+                    <td class="text-nowrap text-center" >{{ pcap['time'] }}</td>
+                    <td class="text-center" >{{ pcap['Source'] }}</td>
+                    <td class="text-center" >{{ pcap['Destination'] }}</td>
+                    <td class="text-center text-nowrap">{{ pcap['Procotol'] }}</td>
+                    <td class="text-center text-nowrap">{{ pcap['len'] }}</td>
+                    <td class="text-left text-nowrap">{{ pcap['info'] }}</td>
+                </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
