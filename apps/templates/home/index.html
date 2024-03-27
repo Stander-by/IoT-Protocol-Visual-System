@@ -1,6 +1,8 @@
+
+
 {% extends "layouts/base.html" %}
 
-{% block title %} Notifications {% endblock %}
+{% block title %} Dashboard {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -8,148 +10,461 @@
 {% block content %}
 
 <div class="content">
-    <div id="mqttform"></div>
-</div>
-<!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="places-buttons">
+                        <div class="row">
+                            <div class="col-md-6 ml-auto mr-auto text-center">
+                                <h3 class="card-title">
+                                    欢迎使用IoT Proto Visual System &#128512;
+                                    <p class="category">本系统仅支持大小小于50M的pcap,cap格式数据包</p>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 ml-auto mr-auto">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-block"
+                                                onclick="show.showNotification1('top','left')">数据报文信息
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-block"
+                                                onclick="demo.showNotification('top','center')">协议统计
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-block"
+                                                onclick="demo.showNotification('top','right')">Top Right
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 ml-auto mr-auto">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-block"
+                                                onclick="demo.showNotification('bottom','left')">Bottom Left
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-block"
+                                                onclick="demo.showNotification('bottom','center')">Bottom Center
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary btn-block"
+                                                onclick="demo.showNotification('bottom','right')">Bottom Right
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="col-md">
+                <div class="card card-chart">
+                    <div class="card-header">
+                        <h4 class="card-title">Iot protocol cloud</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area" id="cloudpic">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="card card-chart">
+                    <div class="card-header">
+                        <h4 class="card-title">MQTT packet format</h4>
+                    </div>
+                    <div class="card-body">
+                        <img src="../../static/assets/img/mqttform.png"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">How to Start</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-primary">
+                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="tim-icons icon-check-2"></i>
+                        </button>
+                        <span><b> First - </b> Click the first button of naviagtion-bar upload a .pcap file</span>
+                    </div>
+                    <div class="alert alert-info">
+                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="tim-icons icon-check-2"></i>
+                        </button>
+                        <span><b> Info - </b> {% with messages = get_flashed_messages() %}{% if messages %}{% for message in messages %}{{ message }}{% endfor %}{% endif %}{% endwith %}</span>
+                    </div>
+                    <div class="alert alert-success">
+                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="tim-icons icon-check-2"></i>
+                        </button>
+                        <span><b> PartⅠ - </b> This is a basic information about the pcap you upload, including time,sourceIP,desIP,port,info,len,you can also view the Iot protocol info indivaidually.</span>
+                    </div>
+                    <div class="alert alert-warning">
+                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="tim-icons icon-check-2"></i>
+                        </button>
+                        <span><b> PartⅡ - </b> This is a part of protocol statistics, the number of iot protocols corresponding to a certain ip, the number of protocols that appear the most, and the distribution of individual protocols</span>
+                    </div>
+                    <div class="alert alert-danger">
+                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="tim-icons icon-check-2"></i>
+                        </button>
+                        <span><b> Danger - </b> This is a regular notification made with ".alert-danger"</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!-- Specific Page JS goes HERE  -->
+    </div>
+</div>
 {% autoescape false %}
+<!-- ECharts单文件引入 -->
+
 <script src="../../static/echarts-2.27/build/dist/echarts.min.js" type="text/javascript"></script>
 <script src="../../static/echarts-2.27/build/dist/westeros.js" type="text/javascript"></script>
+<script src="../../static/echarts-2.27/build/dist/echarts-wordcloud.js" type="text/javascript"></script>
+<!--HTTP协议条形图-->
 <script type="text/javascript">
-    echarts.use([TreemapChart, CanvasRenderer]);
-    var chartDom = document.getElementById('mqttform');
-    var myChart = echarts.init(chartDom);
-    var app = {};
-
+    var chartDom = document.getElementById('cloudpic');
+    var myChart = echarts.init(chartDom, 'westeros');
     var option;
-
+    // prettier-ignore
     option = {
-        backgroundColor: '#fff',
-        //整个图片的背景色设置为白色
-        title: {
-            text: '次数分布',
-            left: 'center',
-            top: 0,
+        tooltip: {},
+        series: [{
+            type: 'wordCloud',
+            gridSize: 2,
+            sizeRange: [15, 60],
+            rotationRange: [-90, 90],
+            shape: 'pentagon',
+            width: 'auto',
+            height: 'auto',
+            drawOutOfBound: true,
+            textStyle: {
+                color: function () {
+                    return 'rgb(' + [
+                        Math.round(Math.random() * 160),
+                        Math.round(Math.random() * 160),
+                        Math.round(Math.random() * 160)
+                    ].join(',') + ')';
+                }
+            },
+            emphasis: {
+                textStyle: {
+                    shadowBlur: 10,
+                    shadowColor: '#333'
+                }
+            },
+            data: [
+                {
+                    name: 'MQTT',
+                    value: 10000,
+                    textStyle: {
+                        color: 'black'
+                    },
+                    emphasis: {
+                        textStyle: {
+                            color: 'red'
+                        }
+                    }
+                },
+                {
+                    name: 'DICOM',
+                    value: 6181
+                },
+                {
+                    name: 'HTTP',
+                    value: 4386
+                },
+                {
+                    name: 'TCP',
+                    value: 4055
+                },
+                {
+                    name: 'UDP',
+                    value: 2467
+                },
+                {
+                    name: 'DNS',
+                    value: 2244
+                },
+                {
+                    name: 'IP',
+                    value: 1898
+                },
+                {
+                    name: 'ARP',
+                    value: 1484
+                },
+                {
+                    name: 'ICMP',
+                    value: 1112
+                },
+                {
+                    name: 'IGMP',
+                    value: 965
+                },
+                {
+                    name: 'TLS',
+                    value: 847
+                },
+                {
+                    name: 'OSPF',
+                    value: 582
+                },
+                {
+                    name: 'FTP',
+                    value: 555
+                },
+                {
+                    name: 'DHCP',
+                    value: 550
+                },
+                {
+                    name: 'POP3',
+                    value: 462
+                },
+                {
+                    name: 'SMTP',
+                    value: 366
+                },
+                {
+                    name: 'SSH',
+                    value: 360
+                },
+                {
+                    name: 'BGP',
+                    value: 282
+                },
+                {
+                    name: 'RIP',
+                    value: 273
+                },
+                {
+                    name: 'IPv6',
+                    value: 265
+                }
+            ]
+        }]
+    };
+    option && myChart.setOption(option);
+</script>
+<!--mqttform-->
+<script>
+    var chartDom = document.getElementById('mqttform');
+    var myChart = echarts.init(chartDom, 'westeros');
+    var option;
+    // prettier-ignore
+    const data = {
+        name: 'flare',
+        children: [
+            {
+                name: 'data',
+                children: [
+                    {
+                        name: 'converters',
+                        children: [
+                            {name: 'Converters', value: 721},
+                            {name: 'DelimitedTextConverter', value: 4294}
+                        ]
+                    },
+                    {
+                        name: 'DataUtil',
+                        value: 3322
+                    }
+                ]
+            },
+            {
+                name: 'display',
+                children: [
+                    {name: 'DirtySprite', value: 8833},
+                    {name: 'LineSprite', value: 1732},
+                    {name: 'RectSprite', value: 3623}
+                ]
+            },
+            {
+                name: 'flex',
+                children: [{name: 'FlareVis', value: 4116}]
+            },
+            {
+                name: 'query',
+                children: [
+                    {name: 'AggregateExpression', value: 1616},
+                    {name: 'And', value: 1027},
+                    {name: 'Arithmetic', value: 3891},
+                    {name: 'Average', value: 891},
+                    {name: 'BinaryExpression', value: 2893},
+                    {name: 'Comparison', value: 5103},
+                    {name: 'CompositeExpression', value: 3677},
+                    {name: 'Count', value: 781},
+                    {name: 'DateUtil', value: 4141},
+                    {name: 'Distinct', value: 933},
+                    {name: 'Expression', value: 5130},
+                    {name: 'ExpressionIterator', value: 3617},
+                    {name: 'Fn', value: 3240},
+                    {name: 'If', value: 2732},
+                    {name: 'IsA', value: 2039},
+                    {name: 'Literal', value: 1214},
+                    {name: 'Match', value: 3748},
+                    {name: 'Maximum', value: 843},
+                    {
+                        name: 'methods',
+                        children: [
+                            {name: 'add', value: 593},
+                            {name: 'and', value: 330},
+                            {name: 'average', value: 287},
+                            {name: 'count', value: 277},
+                            {name: 'distinct', value: 292},
+                            {name: 'div', value: 595},
+                            {name: 'eq', value: 594},
+                            {name: 'fn', value: 460},
+                            {name: 'gt', value: 603},
+                            {name: 'gte', value: 625},
+                            {name: 'iff', value: 748},
+                            {name: 'isa', value: 461},
+                            {name: 'lt', value: 597},
+                            {name: 'lte', value: 619},
+                            {name: 'max', value: 283},
+                            {name: 'min', value: 283},
+                            {name: 'mod', value: 591},
+                            {name: 'mul', value: 603},
+                            {name: 'neq', value: 599},
+                            {name: 'not', value: 386},
+                            {name: 'or', value: 323},
+                            {name: 'orderby', value: 307},
+                            {name: 'range', value: 772},
+                            {name: 'select', value: 296},
+                            {name: 'stddev', value: 363},
+                            {name: 'sub', value: 600},
+                            {name: 'sum', value: 280},
+                            {name: 'update', value: 307},
+                            {name: 'variance', value: 335},
+                            {name: 'where', value: 299},
+                            {name: 'xor', value: 354},
+                            {name: 'x_x', value: 264}
+                        ]
+                    },
+                    {name: 'Minimum', value: 843},
+                    {name: 'Not', value: 1554},
+                    {name: 'Or', value: 970},
+                    {name: 'Query', value: 13896},
+                    {name: 'Range', value: 1594},
+                    {name: 'StringUtil', value: 4130},
+                    {name: 'Sum', value: 791},
+                    {name: 'Variable', value: 1124},
+                    {name: 'Variance', value: 1876},
+                    {name: 'Xor', value: 1101}
+                ]
+            },
+            {
+                name: 'scale',
+                children: [
+                    {name: 'IScaleMap', value: 2105},
+                    {name: 'LinearScale', value: 1316},
+                    {name: 'LogScale', value: 3151},
+                    {name: 'OrdinalScale', value: 3770},
+                    {name: 'QuantileScale', value: 2435},
+                    {name: 'QuantitativeScale', value: 4839},
+                    {name: 'RootScale', value: 1756},
+                    {name: 'Scale', value: 4268},
+                    {name: 'ScaleType', value: 1821},
+                    {name: 'TimeScale', value: 5833}
+                ]
+            }
+        ]
+    };
+    option = {
+        tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove'
         },
         series: [
             {
-
-                type: 'treemap',
-                position: 'inside',
-                data: [
-                    {
-                        name: '固定报头',
-                        value: 16,
-                        children: [
-                            {
-                                name: '报文类型',
-                                value: 4
-                            },
-                            {
-                                name: '标志位',
-                                value: 4,
-                                children: [
-                                    {name: 'RETAIN', value: 1},
-                                    {name: 'Qos', value: 2},
-                                    {name: 'DUP', value: 1},
-                                ]
-                            },
-
-                            {
-                                name: '剩余长度',
-                                value: 8
-                            }
-
-                        ]
-                    },
-                    {
-                        name: '连接服务器报文可变报头',
-                        value: 80,
-                        children: [
-                            {
-                                name: '协议名',
-                                value: 16,
-                            },
-                            {
-                                name: '协议级别',
-                                value: 8,
-                            },
-                            {
-                                name: '链接标志',
-                                value: 8,
-                            },
-                            {
-                                name: '保持连接',
-                                value: 16,
-                            },
-                            {
-                                name: '其他',
-                                value: 32,
-                            },
-
-                        ]
-                    },
-                    {
-                        name: '发布消息报文可变报头',
-                        value: 80,
-                        children: [
-                            {
-                                name: '报文标识符Qos>0',
-                                value: 16,
-                            },
-                            {
-                                name: '主题名Topic',
-                                value: 64,
-                            },
-
-                        ]
-                    },
-                    {
-                        name: '连接服务报文有效载荷',
-                        value: 200,
-                        children: [
-                            {
-                                name: '用户端标识符号',
-                                value: 8,
-
-                            },
-                            {
-                                name: '遗属主题',
-                                value: 8,
-                            },
-                            {
-                                name: '遗属消息',
-                                value: 8,
-                            },
-                            {
-                                name: '用户名',
-                                value: 8,
-                            },
-                            {
-                                name: '密码',
-                                value: 8,
-                            },
-                        ]
-                    },
-                    {
-                        name: '发布消息报文有效载荷',
-                        value: 200,
-                        children: [
-                            {
-                                name: '应用消息',
-                                value: 8,
-                            },
-                        ]
-                    },
-
-                ]
+                type: 'tree',
+                id: 0,
+                name: 'tree1',
+                data: [data],
+                top: '10%',
+                left: '8%',
+                bottom: '22%',
+                right: '20%',
+                symbolSize: 7,
+                edgeShape: 'polyline',
+                edgeForkPosition: '63%',
+                initialTreeDepth: 3,
+                lineStyle: {
+                    width: 2
+                },
+                label: {
+                    backgroundColor: '#fff',
+                    position: 'left',
+                    verticalAlign: 'middle',
+                    align: 'right'
+                },
+                leaves: {
+                    label: {
+                        position: 'right',
+                        verticalAlign: 'middle',
+                        align: 'left'
+                    }
+                },
+                emphasis: {
+                    focus: 'descendant'
+                },
+                expandAndCollapse: true,
+                animationDuration: 550,
+                animationDurationUpdate: 750
             }
         ]
     };
 
     option && myChart.setOption(option);
+
+
+    option && myChart.setOption(option);
 </script>
+<!--show-->
+<script>
+    show = {
+        showNotification1: function (from, align) {
+            color = Math.floor((Math.random() * 4) + 1);
+
+            $.notify({
+                icon: "tim-icons icon-bell-55",
+                message: "Welcome to <b>IOT1</b> - a beautiful freebie for every web developer."
+
+            }, {
+                type: type[color],
+                timer: 8000,
+                placement: {
+                    from: from,
+                    align: align
+                }
+            });
+        }
+    };
+</script>
+<!--pie-->
+
 {% endautoescape %}
 {% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+
