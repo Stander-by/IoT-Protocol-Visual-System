@@ -71,7 +71,7 @@
         <div class="col-lg-6 col-md-12">
             <div class="card card-tasks">
                 <div class="card-header ">
-                    <h6 class="title d-inline">Tasks(5)</h6>
+                    <h6 class="title d-inline">DNS协议分析</h6>
                     <p class="card-category d-inline">today</p>
                     <div class="dropdown">
                         <button type="button" class="btn btn-link dropdown-toggle btn-icon"
@@ -233,128 +233,30 @@
             </div>
         </div>
         <div class="col-lg-6 col-md-12">
-            <div class="card ">
+            <div class="card card-tasks">
                 <div class="card-header">
-                    <h4 class="card-title"> Simple Table</h4>
+                    <h4 class="card-title"> DNS协议分析</h4>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table tablesorter " id="">
+                    <div class="table-full-width table-responsive">
+                        <table class="table">
                             <thead class=" text-primary">
                             <tr>
-                                <th>
-                                    Name
-                                </th>
-                                <th>
-                                    Country
-                                </th>
-                                <th>
-                                    City
+                                <th class="text-center">
+                                    请求网址
                                 </th>
                                 <th class="text-center">
-                                    Salary
+                                    数量
                                 </th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>
-                                    Dakota Rice
-                                </td>
-                                <td>
-                                    Niger
-                                </td>
-                                <td>
-                                    Oud-Turnhout
-                                </td>
-                                <td class="text-center">
-                                    $36,738
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Minerva Hooper
-                                </td>
-                                <td>
-                                    Curaçao
-                                </td>
-                                <td>
-                                    Sinaai-Waas
-                                </td>
-                                <td class="text-center">
-                                    $23,789
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Sage Rodriguez
-                                </td>
-                                <td>
-                                    Netherlands
-                                </td>
-                                <td>
-                                    Baileux
-                                </td>
-                                <td class="text-center">
-                                    $56,142
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Philip Chaney
-                                </td>
-                                <td>
-                                    Korea, South
-                                </td>
-                                <td>
-                                    Overland Park
-                                </td>
-                                <td class="text-center">
-                                    $38,735
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Doris Greene
-                                </td>
-                                <td>
-                                    Malawi
-                                </td>
-                                <td>
-                                    Feldkirchen in Kärnten
-                                </td>
-                                <td class="text-center">
-                                    $63,542
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Mason Porter
-                                </td>
-                                <td>
-                                    Chile
-                                </td>
-                                <td>
-                                    Gloucester
-                                </td>
-                                <td class="text-center">
-                                    $78,615
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    Jon Porter
-                                </td>
-                                <td>
-                                    Portugal
-                                </td>
-                                <td>
-                                    Gloucester
-                                </td>
-                                <td class="text-center">
-                                    $98,615
-                                </td>
-                            </tr>
+                            {% for key,val in dns_dict %}
+                                <tr data-toggle="modal" data-target="#myModal">
+                                    <th scope="row" class="text-center" id="id">{{ key }}</th>
+                                    <td class="text-nowrap text-center">{{ val }}</td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -399,7 +301,7 @@
         },
         yAxis: {
             type: 'category',
-            data: {{ http_key }}
+            data: {{ ip_key }}
         },
         series: [
             {
@@ -409,6 +311,11 @@
             },
             {
                 name: 'MQTT',
+                type: 'bar',
+                data: {{ mqtt_value }}
+            },
+            {
+                name: 'MQTT/SSL',
                 type: 'bar',
                 data: {{ http_value }}
             }
@@ -496,7 +403,7 @@
         xAxis: [
             {
                 type: 'category',
-                data: ["IP", "IPv6", "TCP", "UDP", "ARP", "ICMP", "DNS", "HTTP", "HTTPS", "MQTT", "Others"],
+                data: ["IP", "IPv6", "TCP", "UDP", "ARP", "ICMP", "DNS", "HTTP", "HTTPS", "MQTT", "MQTT/SSL", "Others"],
                 axisTick: {
                     alignWithLabel: true
                 },
