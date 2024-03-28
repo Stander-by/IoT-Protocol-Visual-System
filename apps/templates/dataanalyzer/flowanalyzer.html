@@ -1,0 +1,585 @@
+
+
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-chart">
+                <div class="card-header ">
+                    <div class="row">
+                        <div class="col-sm-6 text-left">
+                            <h5 class="card-category">Time flow diagram</h5>
+                            <h4 class="card-title">时间流量图(Byte)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area" id="timeflow">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card card-chart">
+                <div class="card-header">
+                    <h5 class="card-category">Statistics on outgoing and incoming flow</h5>
+                    <h4 class="card-title"><i class="tim-icons icon-chart-pie-36 text-primary"></i> 数据流出流入统计</h4>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area" id="ipdata">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card card-chart">
+                <div class="card-header">
+                    <h5 class="card-category">Iot protocol traffic statistics</h5>
+                    <h4 class="card-title"><i class="tim-icons icon-chart-bar-32 text-info"></i> 流量最多协议统计饼状图</h4>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area" id="mostpie">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card card-chart">
+                <div class="card-header">
+                    <h5 class="card-category">Curve chart of data packet length</h5>
+                    <h4 class="card-title"><i class="tim-icons icon-bullet-list-67 text-success"></i>物联网协议流量统计图</h4>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area" id="iotpie">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-chart">
+                <div class="card-header ">
+                    <div class="row">
+                        <div class="col-sm-6 text-left">
+                            <h5 class="card-category">Total inbound IP traffic</h5>
+                            <h4 class="card-title">流入IP总流量图(Byte)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area" id="ipinflow">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-chart">
+                <div class="card-header ">
+                    <div class="row">
+                        <div class="col-sm-6 text-left">
+                            <h5 class="card-category">Total outbound IP traffic</h5>
+                            <h4 class="card-title">流出IP总流量图(Byte)</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area" id="ipoutflow">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% autoescape false %}
+<!-- ECharts单文件引入 -->
+
+<script src="../../static/echarts-2.27/build/dist/echarts.min.js" type="text/javascript"></script>
+<script src="../../static/echarts-2.27/build/dist/westeros.js" type="text/javascript"></script>
+<!--时间流量图-->
+<script>
+    var chartDom = document.getElementById('timeflow');
+    var myChart = echarts.init(chartDom, 'westeros');
+    var option;
+
+    option = {
+        grid: {
+            left: '2%',
+            right: '2%',
+            bottom: '2%',
+            top: '3%',
+            containLabel: true
+        },
+        toolbox: {
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                animation: false,
+                label: {
+                    backgroundColor: '#505765'
+                }
+            }
+        },
+        legend: {
+            data: ['Flow'],
+            right: 50
+        },
+        dataZoom: [
+            {
+                show: true,
+                realtime: true,
+                start: 65,
+                end: 85
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 65,
+                end: 85
+            }
+        ],
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: false,
+                axisLine: {onZero: false},
+                // prettier-ignore
+                data: {{ time_flow_keys }}
+            }
+        ],
+        yAxis: [
+            {
+                name: 'KB',
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value} byte'
+                }
+            }
+        ],
+        series: [
+            {
+                name: 'Flow',
+                type: 'line',
+                areaStyle: {},
+                lineStyle: {
+                    width: 1
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                markArea: {
+                    silent: true,
+                    itemStyle: {
+                        opacity: 0.3
+                    }
+                },
+                // prettier-ignore
+                data: {{ time_flow_values }}
+            }
+        ]
+    };
+
+    option && myChart.setOption(option);
+
+</script>
+<!--流分布-->
+<script>
+    var chartDom = document.getElementById('ipdata');
+    var myChart = echarts.init(chartDom, 'westeros');
+    var option;
+
+    // This example requires ECharts v5.5.0 or later
+    option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} KB ({d}%)"
+        },
+        legend: {
+            top: '5%',
+            left: 'center'
+        },
+        series: [
+            {
+                name: 'IP流量',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                center: ['50%', '70%'],
+                // adjust the start and end angle
+                startAngle: 180,
+                endAngle: 360,
+                data: [
+                    {value: {{ data_flow['IN'] }}, name: 'Inbound'},
+                    {value: {{ data_flow['OUT'] }}, name: 'Outbound'}
+                ]
+            }
+        ]
+    };
+
+    option && myChart.setOption(option);
+</script>
+<!--流量最多协议统计饼状图-->
+<script type="text/javascript">
+    var chartDom = document.getElementById('mostpie');
+    var myChart = echarts.init(chartDom, 'westeros');
+    var option;
+
+    option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} KB ({d}%)"
+        },
+        legend: {
+            top: '3%',
+            orient: 'vertical',
+            x: 'left',
+        },
+        series: [
+            {
+                name: 'flow byte',
+                type: 'pie',
+                left: '20%',
+                radius: '70%',
+                labelLine: {
+                    show: false
+                },
+                label: {
+                    show: false,
+                },
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                },
+                data: [
+                    {% for key, value in most_flow_dict %}
+                        {value:{{ value }}, name: '{{ key }}'},
+                    {% endfor %}
+                ]
+            }
+        ]
+    };
+    option && myChart.setOption(option);
+</script>
+<!--物联网协议统计饼状图-->
+<script type="text/javascript">
+    var chartDom = document.getElementById('iotpie');
+    var myChart = echarts.init(chartDom, 'westeros');
+    var option;
+
+    option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} KB ({d}%)"
+        },
+        legend: {
+            top: '3%',
+            orient: 'vertical',
+            x: 'left',
+        },
+        series: [
+            {
+                name: 'flow byte',
+                type: 'pie',
+                left: '20%',
+                radius: '70%',
+                labelLine: {
+                    show: false
+                },
+                label: {
+                    show: false,
+                },
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                },
+                data: [
+                    {% for key, value in iot_dict.items() %}
+                        {value:{{ value }}, name: '{{ key }}'},
+                    {% endfor %}
+                ]
+            }
+        ]
+    };
+    option && myChart.setOption(option);
+</script>
+<!--ip流入-->
+<script>
+    var chartDom = document.getElementById('ipinflow');
+    var myChart = echarts.init(chartDom, 'westeros');
+    var option;
+
+    option = {
+        grid: {
+            left: '2%',
+            right: '2%',
+            bottom: '2%',
+            top: '3%',
+            containLabel: true
+        },
+        toolbox: {
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                animation: false,
+                label: {
+                    backgroundColor: '#505765'
+                }
+            }
+        },
+        legend: {
+            data: ['flow rate', 'packet num'],
+            left: '10%',
+            top: '50%',
+            orient: 'vertical',
+        },
+        dataZoom: [
+            {
+                show: true,
+                realtime: true,
+                start: 65,
+                end: 85
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 65,
+                end: 85
+            }
+        ],
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: false,
+                axisLine: {onZero: false},
+                // prettier-ignore
+                data:  {{ ip_flow['in_key'] }}
+            }
+        ],
+        yAxis: [
+            {
+                name: 'Byte',
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value} byte'
+                }
+            },
+            {
+                name: 'Num',
+                nameLocation: 'start',
+                alignTicks: true,
+                type: 'value',
+                inverse: true
+            }
+        ],
+        series: [
+            {
+                name: 'flow rate',
+                type: 'line',
+                areaStyle: {},
+                lineStyle: {
+                    width: 1
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                markArea: {
+                    silent: true,
+                    itemStyle: {
+                        opacity: 0.3
+                    }
+                },
+                // prettier-ignore
+                data: {{ ip_flow['in_len'] }}
+            },
+            {
+                name: 'packet num',
+                type: 'line',
+                yAxisIndex: 1,
+                areaStyle: {},
+                lineStyle: {
+                    width: 1
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                markArea: {
+                    silent: true,
+                    itemStyle: {
+                        opacity: 0.3
+                    }
+                },
+                // prettier-ignore
+                data: {{ ip_flow['in_packet'] }}
+            }
+        ]
+    };
+
+    option && myChart.setOption(option);
+
+
+</script>
+<!--ip流出-->
+<script>
+    var chartDom = document.getElementById('ipoutflow');
+    var myChart = echarts.init(chartDom, 'westeros');
+    var option;
+
+    option = {
+        grid: {
+            left: '2%',
+            right: '2%',
+            bottom: '2%',
+            top: '3%',
+            containLabel: true
+        },
+        toolbox: {
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                animation: false,
+                label: {
+                    backgroundColor: '#505765'
+                }
+            }
+        },
+        legend: {
+            data: ['flow rate', 'packet num'],
+            left: '10%',
+            top: "50%",
+            orient: 'vertical',
+        },
+        dataZoom: [
+            {
+                show: true,
+                realtime: true,
+                start: 65,
+                end: 85
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 65,
+                end: 85
+            }
+        ],
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: false,
+                axisLine: {onZero: false},
+                // prettier-ignore
+                data:  {{ ip_flow['out_key'] }}
+            }
+        ],
+        yAxis: [
+            {
+                name: 'Byte',
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value} byte'
+                }
+            },
+            {
+                name: 'Num',
+                nameLocation: 'start',
+                alignTicks: true,
+                type: 'value',
+                inverse: true
+            }
+        ],
+        series: [
+            {
+                name: 'flow rate',
+                type: 'line',
+                areaStyle: {},
+                lineStyle: {
+                    width: 1
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                markArea: {
+                    silent: true,
+                    itemStyle: {
+                        opacity: 0.3
+                    }
+                },
+                // prettier-ignore
+                data: {{ ip_flow['out_len'] }}
+            },
+            {
+                name: 'packet num',
+                type: 'line',
+                yAxisIndex: 1,
+                areaStyle: {},
+                lineStyle: {
+                    width: 1
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                markArea: {
+                    silent: true,
+                    itemStyle: {
+                        opacity: 0.3
+                    }
+                },
+                // prettier-ignore
+                data: {{ ip_flow['out_packet'] }}
+            }
+        ]
+    };
+
+    option && myChart.setOption(option);
+
+
+</script>
+{% endautoescape %}
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+
