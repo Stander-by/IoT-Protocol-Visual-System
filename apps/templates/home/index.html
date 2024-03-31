@@ -33,12 +33,12 @@
                                     </div>
                                     <div class="col-md-4">
                                         <button class="btn btn-primary btn-block"
-                                                onclick="demo.showNotification('top','center')">协议统计
+                                                onclick="demo.showNotification2('top','center')">协议统计
                                         </button>
                                     </div>
                                     <div class="col-md-4">
                                         <button class="btn btn-primary btn-block"
-                                                onclick="demo.showNotification('top','right')">流量统计
+                                                onclick="demo.showNotification3('top','right')">流量统计
                                         </button>
                                     </div>
                                 </div>
@@ -49,17 +49,17 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <button class="btn btn-primary btn-block"
-                                                onclick="demo.showNotification('bottom','left')">Bottom Left
+                                                onclick="demo.showNotification4('bottom','left')">Bottom Left
                                         </button>
                                     </div>
                                     <div class="col-md-4">
                                         <button class="btn btn-primary btn-block"
-                                                onclick="demo.showNotification('bottom','center')">Bottom Center
+                                                onclick="demo.showNotification5('bottom','center')">Bottom Center
                                         </button>
                                     </div>
                                     <div class="col-md-4">
                                         <button class="btn btn-primary btn-block"
-                                                onclick="demo.showNotification('bottom','right')">Bottom Right
+                                                onclick="demo.showNotification6('bottom','right')">Bottom Right
                                         </button>
                                     </div>
                                 </div>
@@ -98,18 +98,19 @@
                     <h4 class="card-title">How to Start</h4>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-primary">
-                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
-                            <i class="tim-icons icon-check-2"></i>
-                        </button>
-                        <span><b> First - </b> Click the first button of naviagtion-bar upload a .pcap file</span>
-                    </div>
                     <div class="alert alert-info">
                         <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
                             <i class="tim-icons icon-check-2"></i>
                         </button>
                         <span><b> Info - </b> {% with messages = get_flashed_messages() %}{% if messages %}{% for message in messages %}{{ message }}{% endfor %}{% endif %}{% endwith %}</span>
                     </div>
+                    <div class="alert alert-primary">
+                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="tim-icons icon-check-2"></i>
+                        </button>
+                        <span><b> First - </b> Click the first button of naviagtion-bar upload a .pcap file</span>
+                    </div>
+
                     <div class="alert alert-success">
                         <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
                             <i class="tim-icons icon-check-2"></i>
@@ -443,12 +444,47 @@
 <!--show-->
 <script>
     show = {
+        //数据报文信息
         showNotification1: function (from, align) {
             color = Math.floor((Math.random() * 4) + 1);
 
             $.notify({
                 icon: "tim-icons icon-bell-55",
-                message: "Welcome to <b>IOT1</b> - a beautiful freebie for every web developer."
+                message: "Welcome to <b>数据报文信息</b> - 该部分主要负责展示数据包基础信息，包括数据包时间，源地址，目的地址，端口，协议长度，协议类型，对于物联网协议还有一些其他的信息。"
+
+            }, {
+                type: type[color],
+                timer: 8000,
+                placement: {
+                    from: from,
+                    align: align
+                }
+            });
+        },
+        //协议统计
+        showNotification2: function (from, align) {
+            color = Math.floor((Math.random() * 4) + 1);
+
+            $.notify({
+                icon: "tim-icons icon-bell-55",
+                message: "Welcome to <b>协议统计</b> - 1 - 2 - 3"
+
+            }, {
+                type: type[color],
+                timer: 8000,
+                placement: {
+                    from: from,
+                    align: align
+                }
+            });
+        }
+        //流量统计
+        showNotification3: function (from, align) {
+            color = Math.floor((Math.random() * 4) + 1);
+
+            $.notify({
+                icon: "tim-icons icon-bell-55",
+                message: "Welcome to <b>流量信息</b> - 该部分主要负责展示数据包基础信息，包括数据包时间，源地址，目的地址，端口，协议长度，协议类型，对于物联网协议还有一些其他的信息。"
 
             }, {
                 type: type[color],
