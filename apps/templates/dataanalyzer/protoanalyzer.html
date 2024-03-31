@@ -71,7 +71,9 @@
         <div class="col-lg-6 col-md-12">
             <div class="card card-tasks">
                 <div class="card-header ">
-                    <h6 class="title d-inline">DNS协议分析</h6>
+                    <h6 class="title d-inline">
+                        IOT协议分析
+                    </h6>
                     <p class="card-category d-inline">today</p>
                     <div class="dropdown">
                         <button type="button" class="btn btn-link dropdown-toggle btn-icon"
@@ -106,7 +108,7 @@
                                 </td>
                                 <td class="td-actions text-right">
                                     <button type="button" rel="tooltip" title="" class="btn btn-link"
-                                            data-original-title="Edit Task">
+                                            data-original-title="Edit Task" @click="openNewWin">
                                         <i class="tim-icons icon-pencil"></i>
                                     </button>
                                 </td>
@@ -469,6 +471,16 @@
 
     option && myChart.setOption(option);
 
+</script>
+<script>
+
+    const openNewWin = function () {
+        window.open(
+            'https://www.oecom.cn',
+            '单独窗口',
+            'height=300,width=600,top=300,left=200,toolbar=no,menubar=no, scrollbars=no,resizable=no,location=no, status=no'
+        )
+    }
 </script>
 {% endautoescape %}
 {% endblock content %}
