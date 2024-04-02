@@ -76,6 +76,7 @@
                     </h6>
                     <p class="card-category d-inline">today</p>
                     <div class="dropdown">
+
                         <button type="button" class="btn btn-link dropdown-toggle btn-icon"
                                 data-toggle="dropdown">
                             <i class="tim-icons icon-settings-gear-63"></i>
@@ -107,10 +108,11 @@
                                     <p class="text-muted">Dwuamish Head, Seattle, WA 8:47 AM</p>
                                 </td>
                                 <td class="td-actions text-right">
-                                    <button type="button" rel="tooltip" title="" class="btn btn-link"
-                                            data-original-title="Edit Task" @click="openNewWin">
-                                        <i class="tim-icons icon-pencil"></i>
+                                    <button class="btn btn-link" id="" data-toggle="modal"
+                                            data-target="#changeModal">
+    <i class="tim-icons icon-pencil"></i>
                                     </button>
+
                                 </td>
                             </tr>
                             <tr>
@@ -267,6 +269,28 @@
         </div>
     </div>
 </div>
+<div class="modal modal-search fade" id="changeModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <form enctype="multipart/form-data" method="POST" action="{{ url_for('home_blueprint.change') }}">
+                            <label for="message1">Message1:</label>
+                            <input type="text" id="message1" name="message1" value="message1">
+                            <br>
+                            <label for="message2">Message2:</label>
+                            <input type="text" id="message2" name="message2" value="message2">
+                            <br>
+                            <button type="submit">
+                                修改
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
 {% autoescape false %}
 <!-- ECharts单文件引入 -->
 
@@ -472,16 +496,7 @@
     option && myChart.setOption(option);
 
 </script>
-<script>
 
-    const openNewWin = function () {
-        window.open(
-            'https://www.oecom.cn',
-            '单独窗口',
-            'height=300,width=600,top=300,left=200,toolbar=no,menubar=no, scrollbars=no,resizable=no,location=no, status=no'
-        )
-    }
-</script>
 {% endautoescape %}
 {% endblock content %}
 
