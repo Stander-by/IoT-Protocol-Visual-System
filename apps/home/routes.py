@@ -14,6 +14,7 @@ from .utils.pcap_decode import PcapDecode
 from .utils.pcap_filter import *
 from .utils.proto_analyzer import *
 from .utils.flow_analyzer import *
+from .utils.mqtt_analyzer import *
 import os
 
 # from werkzeug import secure_filename
@@ -57,6 +58,16 @@ def upload():
         else:
             flash('上传失败,请上传允许的数据包格式!')
             return render_template('home/index.html')
+
+@blueprint.route('/change', methods=['POST', 'GET'])
+@login_required
+def change():
+    message1 = request.form.get('message1')
+    message2 = request.form.get('message2')
+
+    return render_template('home/index.html')
+
+
 
 
 @blueprint.route('/database', methods=['POST', 'GET'])
@@ -108,10 +119,13 @@ def protoanalyzer():
             http_value_list.append(http_value)
         dns_dict = dns_statistic(PCAPS)
         dns_dict = sorted(dns_dict.items(), key=lambda d: d[1], reverse=False)
+
+        mqtt_pcaps = proto_filter(u'proto', 'MQTT', PCAPS, PD)
+        mqtt_analyzer_pcaps = mqtt_decode(mqtt_pcaps)
         return render_template('./dataanalyzer/protoanalyzer.html', data=list(data_dict.values()),
                                pcap_len=list(pcap_len_dict.values()), pcap_keys=list(pcap_count_dict.keys()),
                                ip_key=ip_key_list, http_value=http_value_list, mqtt_value=mqtt_value_list,
-                               pcap_count=pcap_count_dict, dns_dict=dns_dict)
+                               pcap_count=pcap_count_dict, dns_dict=dns_dict, mqtt_pcap_list=list(mqtt_analyzer_pcaps.values()) )
 
 
 @blueprint.route('/flowanalyzer', methods=['POST', 'GET'])
