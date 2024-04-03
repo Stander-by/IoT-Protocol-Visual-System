@@ -92,144 +92,52 @@
                     <div class="table-full-width table-responsive">
                         <table class="table">
                             <tbody>
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" value="">
-                                            <span class="form-check-sign">
+                            {% for pcap in mqtt_pcap_list %}
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="">
+                                                <span class="form-check-sign">
                             <span class="check"></span>
                             </span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p class="title">Update the Documentation</p>
-                                    <p class="text-muted">Dwuamish Head, Seattle, WA 8:47 AM</p>
-                                </td>
-                                <td class="td-actions text-right">
-                                    <button class="btn btn-link" id="" data-toggle="modal"
-                                            data-target="#changeModal">
-    <i class="tim-icons icon-pencil"></i>
-                                    </button>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" value="" checked="">
-                                            <span class="form-check-sign">
-                            <span class="check"></span>
-                            </span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p class="title">GDPR Compliance</p>
-                                    <p class="text-muted">The GDPR is a regulation that requires businesses to
-                                        protect the personal data and privacy of Europe citizens for
-                                        transactions that occur within EU member states.</p>
-                                </td>
-                                <td class="td-actions text-right">
-                                    <button type="button" rel="tooltip" title="" class="btn btn-link"
-                                            data-original-title="Edit Task">
-                                        <i class="tim-icons icon-pencil"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" value="">
-                                            <span class="form-check-sign">
-                            <span class="check"></span>
-                            </span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p class="title">Solve the issues</p>
-                                    <p class="text-muted">Fifty percent of all respondents said they would be
-                                        more likely to shop at a company </p>
-                                </td>
-                                <td class="td-actions text-right">
-                                    <button type="button" rel="tooltip" title="" class="btn btn-link"
-                                            data-original-title="Edit Task">
-                                        <i class="tim-icons icon-pencil"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" value="">
-                                            <span class="form-check-sign">
-                            <span class="check"></span>
-                            </span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p class="title">Release v2.0.0</p>
-                                    <p class="text-muted">Ra Ave SW, Seattle, WA 98116, SUA 11:19 AM</p>
-                                </td>
-                                <td class="td-actions text-right">
-                                    <button type="button" rel="tooltip" title="" class="btn btn-link"
-                                            data-original-title="Edit Task">
-                                        <i class="tim-icons icon-pencil"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" value="">
-                                            <span class="form-check-sign">
-                            <span class="check"></span>
-                            </span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p class="title">Export the processed files</p>
-                                    <p class="text-muted">The report also shows that consumers will not easily
-                                        forgive a company once a breach exposing their personal data
-                                        occurs. </p>
-                                </td>
-                                <td class="td-actions text-right">
-                                    <button type="button" rel="tooltip" title="" class="btn btn-link"
-                                            data-original-title="Edit Task">
-                                        <i class="tim-icons icon-pencil"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" value="">
-                                            <span class="form-check-sign">
-                            <span class="check"></span>
-                            </span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p class="title">Arival at export process</p>
-                                    <p class="text-muted">Capitol Hill, Seattle, WA 12:34 AM</p>
-                                </td>
-                                <td class="td-actions text-right">
-                                    <button type="button" rel="tooltip" title="" class="btn btn-link"
-                                            data-original-title="Edit Task">
-                                        <i class="tim-icons icon-pencil"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="title">{{ pcap['type'] }}</p>
+                                        <p class="text-muted">
+                                            {{ pcap['time'] }}
+                                            <br>
+                                            {{ pcap['Source'] }} -> {{ pcap['Destination'] }}
+                                        </p>
+                                        <p class="text-primary">
+                                            {% if 'topic' in pcap %}
+                                                Topic: &nbsp <strong>{{ pcap['topic'] }}</strong>
+                                                <br>
+                                                DUP:{{ pcap['DUP'] }} &nbsp;&nbsp; QoS2:{{ pcap['QoS2'] }} &nbsp;&nbsp;
+                                                RETAIN:{{ pcap['RETAIN'] }}
+                                                </p>
+                                                <p class="text-info">
+                                                {
+                                                <br>
+                                                {% for key,value in pcap['message'].items() %}
+                                                    &nbsp; {{ key }} : {{ value }} <br>
+                                                {% endfor %}
+                                                }
+                                            {% endif %}
+                                            </p>
+                                    </td>
+                                {% if 'topic' in pcap %}
+                                    <td class="td-actions text-right">
+                                        <button class="btn btn-link" id="" data-toggle="modal"
+                                                data-target="#changeModal">
+                                            <i class="tim-icons icon-pencil"></i>
+                                        </button>
+                                    </td>
+                                {% endif %}
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -270,27 +178,27 @@
     </div>
 </div>
 <div class="modal modal-search fade" id="changeModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <form enctype="multipart/form-data" method="POST" action="{{ url_for('home_blueprint.change') }}">
-                            <label for="message1">Message1:</label>
-                            <input type="text" id="message1" name="message1" value="message1">
-                            <br>
-                            <label for="message2">Message2:</label>
-                            <input type="text" id="message2" name="message2" value="message2">
-                            <br>
-                            <button type="submit">
-                                修改
-                            </button>
-                        </form>
-
-                    </div>
-
-                </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="POST" action="{{ url_for('home_blueprint.change') }}">
+                    <label for="message1">Message1:</label>
+                    <input type="text" id="message1" name="message1" value="message1">
+                    <br>
+                    <label for="message2">Message2:</label>
+                    <input type="text" id="message2" name="message2" value="message2">
+                    <br>
+                    <button type="submit">
+                        修改
+                    </button>
+                </form>
 
             </div>
+
         </div>
+
+    </div>
+</div>
 {% autoescape false %}
 <!-- ECharts单文件引入 -->
 
