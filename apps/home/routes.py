@@ -15,6 +15,7 @@ from .utils.pcap_filter import *
 from .utils.proto_analyzer import *
 from .utils.flow_analyzer import *
 from .utils.mqtt_analyzer import *
+from .utils.data_extract import *
 import os
 
 # from werkzeug import secure_filename
@@ -38,7 +39,7 @@ def upload():
     filepath = UPLOAD_FOLDER
     upload = Upload()
     if request.method == 'GET':
-        return render_template('home/index.html')
+        return render_template('home/index.html',segment='index')
     elif request.method == 'POST':
         pcap = upload.pcap.data
         pcapname = pcap.filename
@@ -51,22 +52,30 @@ def upload():
                 pcap.save(os.path.join(filepath, PCAP_NAME))
                 PCAPS = rdpcap(os.path.join(filepath, PCAP_NAME))
                 flash('恭喜你,上传成功！')
-                return render_template('home/index.html')
+                return render_template('home/index.html', segment='index')
             except Exception as e:
                 flash('上传错误,错误信息:' + str(e))
-                return render_template('home/index.html')
+                return render_template('home/index.html',segment='index')
         else:
             flash('上传失败,请上传允许的数据包格式!')
-            return render_template('home/index.html')
+            return render_template('home/index.html',segment='index')
 
-@blueprint.route('/change', methods=['POST', 'GET'])
+
+@blueprint.route('/mqtt_data_extract', methods=['POST', 'GET'])
 @login_required
-def change():
-    message1 = request.form.get('message1')
-    message2 = request.form.get('message2')
-
-    return render_template('home/index.html')
-
+def mqtt_data_extract():
+    if PCAPS == None:
+        flash("请先上传要分析的数据包!")
+        return redirect(url_for('home_blueprint.upload'))
+    else:
+        mqtt_pcaps = proto_filter(u'proto', 'MQTT', PCAPS, PD)
+        mqtt_analyzer_pcaps = mqtt_decode(mqtt_pcaps)
+        mqtt_pcap_list = list(mqtt_analyzer_pcaps.values())
+        mqtt_publish_list = list()
+        for pcap in mqtt_pcap_list:
+            if pcap['type'] == 'PUBLISH':
+                mqtt_publish_list.append(pcap)
+        return render_template('./dataextract/mqtt_data_extract.html', segment='mqtt_data_extract',mqtt_publish_list=mqtt_publish_list)
 
 
 
@@ -87,8 +96,8 @@ def database():
         # 默认显示所有的协议数据
         else:
             pcaps = get_all_pcap(PCAPS, PD)
-            mqtt_pcaps = proto_filter(u'proto', 'MQTT', PCAPS, PD)
-        return render_template('./dataanalyzer/database.html', pcaps=pcaps, mqtt_pcaps=mqtt_pcaps)
+            mqtt_pcaps_raw = proto_filter(u'proto', 'MQTT', PCAPS, PD)
+        return render_template('./dataanalyzer/database.html', segment='database',pcaps=pcaps, mqtt_pcaps=mqtt_pcaps_raw)
 
 
 @blueprint.route('/protoanalyzer', methods=['POST', 'GET'])
@@ -119,13 +128,14 @@ def protoanalyzer():
             http_value_list.append(http_value)
         dns_dict = dns_statistic(PCAPS)
         dns_dict = sorted(dns_dict.items(), key=lambda d: d[1], reverse=False)
-
         mqtt_pcaps = proto_filter(u'proto', 'MQTT', PCAPS, PD)
         mqtt_analyzer_pcaps = mqtt_decode(mqtt_pcaps)
-        return render_template('./dataanalyzer/protoanalyzer.html', data=list(data_dict.values()),
+        mqtt_pcap_list = list(mqtt_analyzer_pcaps.values())
+        return render_template('./dataanalyzer/protoanalyzer.html',segment='protoanalyzer',data=list(data_dict.values()),
                                pcap_len=list(pcap_len_dict.values()), pcap_keys=list(pcap_count_dict.keys()),
                                ip_key=ip_key_list, http_value=http_value_list, mqtt_value=mqtt_value_list,
-                               pcap_count=pcap_count_dict, dns_dict=dns_dict, mqtt_pcap_list=list(mqtt_analyzer_pcaps.values()) )
+                               pcap_count=pcap_count_dict, dns_dict=dns_dict,
+                               mqtt_pcap_list=mqtt_pcap_list)
 
 
 @blueprint.route('/flowanalyzer', methods=['POST', 'GET'])
@@ -148,7 +158,7 @@ def flowanalyzer():
         most_flow_key = list()
         for key, value in most_flow_dict:
             most_flow_key.append(key)
-        return render_template('./dataanalyzer/flowanalyzer.html', time_flow_keys=list(time_flow_dict.keys()),
+        return render_template('./dataanalyzer/flowanalyzer.html', segment='flowanalyzer',time_flow_keys=list(time_flow_dict.keys()),
                                time_flow_values=list(time_flow_dict.values()), data_flow=data_flow_dict,
                                ip_flow=data_ip_dict, most_flow_dict=most_flow_dict, iot_dict=iot_proto_flow_dict)
 
@@ -163,7 +173,8 @@ def route_template(template):
 
         # Detect the current page
         segment = get_segment(request)
-
+        # if segment == 'index.html':
+        #     return redirect()
         # Serve the file (if exists) from app/templates/home/FILE.html
         return render_template("home/" + template, segment=segment)
 
