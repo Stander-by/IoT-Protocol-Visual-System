@@ -128,14 +128,21 @@
                                             {% endif %}
                                             </p>
                                     </td>
-                                {% if 'topic' in pcap %}
-                                    <td class="td-actions text-right">
-                                        <button class="btn btn-link" id="" data-toggle="modal"
-                                                data-target="#changeModal">
-                                            <i class="tim-icons icon-pencil"></i>
-                                        </button>
-                                    </td>
-                                {% endif %}
+                                    {% if 'topic' in pcap %}
+                                        <td class="td-actions text-right">
+                                            <button class="btn btn-link" data-toggle="modal">
+                                                <a href="{{ url_for('home_blueprint.mqtt_data_extract') }}">
+                                                <i class="tim-icons icon-pencil"></i>
+                                                </a>
+                                            </button>
+                                        </td>
+                                    {% else %}
+                                        <td class="td-actions text-right">
+                                            <button class="btn btn-link" id="" data-toggle="modal">
+                                                <i class="tim-icons icon-check-2"></i>
+                                            </button>
+                                        </td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -175,28 +182,6 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="modal modal-search fade" id="changeModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <form enctype="multipart/form-data" method="POST" action="{{ url_for('home_blueprint.change') }}">
-                    <label for="message1">Message1:</label>
-                    <input type="text" id="message1" name="message1" value="message1">
-                    <br>
-                    <label for="message2">Message2:</label>
-                    <input type="text" id="message2" name="message2" value="message2">
-                    <br>
-                    <button type="submit">
-                        修改
-                    </button>
-                </form>
-
-            </div>
-
-        </div>
-
     </div>
 </div>
 {% autoescape false %}
