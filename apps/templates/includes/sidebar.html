@@ -16,28 +16,34 @@
             </a>
         </div>
         <ul class="nav">
-            <li>
+            <li class="{% if 'index' in segment %} active {% endif %}">
                 <a href="/">
                     <i class="tim-icons icon-single-02"></i>
                     <p><strong>基本信息</strong></p>
                 </a>
             </li>
-            <li>
+            <li class="{% if 'database' in segment %} active {% endif %}">
                 <a href="{{ url_for('home_blueprint.database') }}">
                     <i class="tim-icons icon-bullet-list-67"></i>
                     <p><strong>数据报文信息</strong></p>
                 </a>
             </li>
-            <li>
+            <li class="{% if 'protoanalyzer' in segment %} active {% endif %}">
                 <a href="{{ url_for('home_blueprint.protoanalyzer') }}">
                     <i class="tim-icons icon-chart-bar-32"></i>
                     <p><strong>协议统计</strong></p>
                 </a>
             </li>
-            <li>
+            <li class="{% if 'flowanalyzer' in segment %} active {% endif %}">
                 <a href="{{ url_for('home_blueprint.flowanalyzer') }}">
                     <i class="tim-icons icon-delivery-fast"></i>
                     <p><strong>流量统计</strong></p>
+                </a>
+            </li>
+            <li class="{% if 'mqtt_data_extract' in segment %} active {% endif %}">
+                <a href="{{ url_for('home_blueprint.mqtt_data_extract') }}">
+                    <i class="tim-icons icon-pencil"></i>
+                    <p><strong>数据修改</strong></p>
                 </a>
             </li>
             <li class="{% if 'icons' in segment %} active {% endif %}">
