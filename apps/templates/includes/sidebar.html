@@ -46,6 +46,12 @@
                     <p><strong>数据修改</strong></p>
                 </a>
             </li>
+            <li class="{% if 'ipmap' in segment %} active {% endif %}">
+                <a href="{{ url_for('home_blueprint.ipmap') }}">
+                    <i class="tim-icons icon-map-big"></i>
+                    <p><strong>访问地图</strong></p>
+                </a>
+            </li>
             <li class="{% if 'icons' in segment %} active {% endif %}">
                 <a href="/icons.html">
                     <i class="tim-icons icon-atom"></i>
