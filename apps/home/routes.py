@@ -16,6 +16,8 @@ from .utils.proto_analyzer import *
 from .utils.flow_analyzer import *
 from .utils.mqtt_analyzer import *
 from .utils.data_extract import *
+from .utils.ipmap import *
+
 import os
 
 # from werkzeug import secure_filename
@@ -39,7 +41,7 @@ def upload():
     filepath = UPLOAD_FOLDER
     upload = Upload()
     if request.method == 'GET':
-        return render_template('home/index.html',segment='index')
+        return render_template('home/index.html', segment='index')
     elif request.method == 'POST':
         pcap = upload.pcap.data
         pcapname = pcap.filename
@@ -55,10 +57,10 @@ def upload():
                 return render_template('home/index.html', segment='index')
             except Exception as e:
                 flash('上传错误,错误信息:' + str(e))
-                return render_template('home/index.html',segment='index')
+                return render_template('home/index.html', segment='index')
         else:
             flash('上传失败,请上传允许的数据包格式!')
-            return render_template('home/index.html',segment='index')
+            return render_template('home/index.html', segment='index')
 
 
 @blueprint.route('/mqtt_data_extract', methods=['POST', 'GET'])
@@ -75,8 +77,8 @@ def mqtt_data_extract():
         for pcap in mqtt_pcap_list:
             if pcap['type'] == 'PUBLISH':
                 mqtt_publish_list.append(pcap)
-        return render_template('./dataextract/mqtt_data_extract.html', segment='mqtt_data_extract',mqtt_publish_list=mqtt_publish_list)
-
+        return render_template('./dataextract/mqtt_data_extract.html', segment='mqtt_data_extract',
+                               mqtt_publish_list=mqtt_publish_list)
 
 
 @blueprint.route('/database', methods=['POST', 'GET'])
@@ -97,7 +99,9 @@ def database():
         else:
             pcaps = get_all_pcap(PCAPS, PD)
             mqtt_pcaps_raw = proto_filter(u'proto', 'MQTT', PCAPS, PD)
-        return render_template('./dataanalyzer/database.html', segment='database',pcaps=pcaps, mqtt_pcaps=mqtt_pcaps_raw)
+            dicom_pcaps_raw = proto_filter(u'proto', 'DICOM', PCAPS, PD)
+        return render_template('./dataanalyzer/database.html', segment='database', pcaps=pcaps,
+                               mqtt_pcaps=mqtt_pcaps_raw, dicom_pcaps=dicom_pcaps_raw)
 
 
 @blueprint.route('/protoanalyzer', methods=['POST', 'GET'])
@@ -111,30 +115,34 @@ def protoanalyzer():
         pcap_len_dict = pcap_len_statistic(PCAPS)
         pcap_count_dict = most_proto_statistic(PCAPS, PD)
         http_dict = http_statistic(PCAPS)
-        mqtt_dict = mqtt_statistic(PCAPS)
-        ip_list = set(http_dict.keys()).union(mqtt_dict.keys())
-        for key in ip_list:
-            if key not in http_dict.keys():
-                http_dict[key] = 0
-            if key not in mqtt_dict.keys():
-                mqtt_dict[key] = 0
-        ip_key_list = list()
-        mqtt_value_list = list()
+        http_dict = sorted(http_dict.items(), key=lambda d: d[1], reverse=False)
+        http_key_list = list()
         http_value_list = list()
-        for key, value in mqtt_dict.items():
-            ip_key_list.append(key)
+        for key, value in http_dict:
+            http_key_list.append(key)
+            http_value_list.append(value)
+        mqtt_dict = mqtt_statistic(PCAPS)
+        mqtt_dict = sorted(mqtt_dict.items(), key=lambda d: d[1], reverse=False)
+        mqtt_key_list = list()
+        mqtt_value_list = list()
+        for key, value in mqtt_dict:
+            mqtt_key_list.append(key)
             mqtt_value_list.append(value)
-            http_value = http_dict[key]
-            http_value_list.append(http_value)
         dns_dict = dns_statistic(PCAPS)
         dns_dict = sorted(dns_dict.items(), key=lambda d: d[1], reverse=False)
         mqtt_pcaps = proto_filter(u'proto', 'MQTT', PCAPS, PD)
         mqtt_analyzer_pcaps = mqtt_decode(mqtt_pcaps)
         mqtt_pcap_list = list(mqtt_analyzer_pcaps.values())
-        return render_template('./dataanalyzer/protoanalyzer.html',segment='protoanalyzer',data=list(data_dict.values()),
-                               pcap_len=list(pcap_len_dict.values()), pcap_keys=list(pcap_count_dict.keys()),
-                               ip_key=ip_key_list, http_value=http_value_list, mqtt_value=mqtt_value_list,
-                               pcap_count=pcap_count_dict, dns_dict=dns_dict,
+        return render_template('./dataanalyzer/protoanalyzer.html', segment='protoanalyzer',
+                               data=list(data_dict.values()),
+                               pcap_len=list(pcap_len_dict.values()),
+                               pcap_keys=list(pcap_count_dict.keys()),
+                               http_ip_list=http_key_list,
+                               http_ip_value=http_value_list,
+                               mqtt_ip_list=mqtt_key_list,
+                               mqtt_ip_value=mqtt_value_list,
+                               pcap_count=pcap_count_dict,
+                               dns_dict=dns_dict,
                                mqtt_pcap_list=mqtt_pcap_list)
 
 
@@ -158,9 +166,31 @@ def flowanalyzer():
         most_flow_key = list()
         for key, value in most_flow_dict:
             most_flow_key.append(key)
-        return render_template('./dataanalyzer/flowanalyzer.html', segment='flowanalyzer',time_flow_keys=list(time_flow_dict.keys()),
+        return render_template('./dataanalyzer/flowanalyzer.html', segment='flowanalyzer',
+                               time_flow_keys=list(time_flow_dict.keys()),
                                time_flow_values=list(time_flow_dict.values()), data_flow=data_flow_dict,
                                ip_flow=data_ip_dict, most_flow_dict=most_flow_dict, iot_dict=iot_proto_flow_dict)
+
+
+@blueprint.route('/ipmap/', methods=['POST', 'GET'])
+@login_required
+def ipmap():
+    if PCAPS == None:
+        flash("请先上传要分析的数据包!")
+        return redirect(url_for('home_blueprint.upload'))
+    else:
+        myip = getmyip()
+        if myip:
+            host_ip = get_host_ip(PCAPS)
+            ipdata = get_ipmap(PCAPS, host_ip)
+            geo_dict = ipdata[0]
+            ip_value_list = ipdata[1]
+            myip_geo = get_geo(myip)
+            ip_value_list = [(list(d.keys())[0], list(d.values())[0])
+                             for d in ip_value_list]
+            return render_template('./dataanalyzer/ipmap.html', segment='ipmap', geo_data=geo_dict,
+                                   ip_value=ip_value_list,
+                                   mygeo=myip_geo)
 
 
 @blueprint.route('/<template>')
