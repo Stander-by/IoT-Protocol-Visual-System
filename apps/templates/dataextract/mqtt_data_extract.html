@@ -1,0 +1,215 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} User Profile {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="row">
+            {% for pcap in mqtt_publish_list %}
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="title">Edit MQTT_PUBLISH</h5>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-4 pr-md-1">
+                                        <div class="form-group">
+                                            <label class="form-label">Time</label>
+                                            <input type="email" name="email" class="form-control" readonly
+                                                   value="{{ pcap['time'] }}">
+                                            <section class="display-error-message">
+                                            </section>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 pr-md-1">
+                                        <div class="form-group">
+                                            <label>SourceIP</label>
+                                            <input type="text" class="form-control"
+                                                   value="{{ pcap['Source'] }}"
+                                                   readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 pr-md-1">
+                                        <div class="form-group">
+                                            <label>DestinationIP</label>
+                                            <input type="text" class="form-control"
+                                                   value="{{ pcap['Destination'] }}"
+                                                   readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 pr-md-1">
+                                        <div class="form-group">
+                                            <label>Topic</label>
+                                            <input type="text" class="form-control"
+                                                   value="{{ pcap['topic'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1 pl-md-1">
+                                        <div class="form-group">
+                                            <label>DUP</label>
+                                            <input type="text" class="form-control"
+                                                   value="{{ pcap['DUP'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 pl-md-1">
+                                        <div class="form-group">
+                                            <label>QoS2</label>
+                                            <input type="text" class="form-control"
+                                                   value="{{ pcap['QoS2'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1 pl-md-1">
+                                        <div class="form-group">
+                                            <label>RETAIN</label>
+                                            <input type="text" class="form-control"
+                                                   value="{{ pcap['RETAIN'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 pl-md-1">
+                                        <div class="form-group">
+                                            <label>Properties_len</label>
+                                            <input type="text" class="form-control"
+                                                   value="{{ pcap['Properties_len'] }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Message</label>
+                                            <input type="text" class="form-control"
+                                                   value="{{ pcap['message'] }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-fill btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="title">Edit Profile</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <form>
+
+                            {% if not current_user.email %}
+                                <div class="row">
+
+                                    <div class="col-md-6 pr-md-1">
+
+                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            <p class="mb-0">
+                                                Please add an email address.
+                                            </p>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            {% endif %}
+
+                            <div class="row">
+
+                                <div class="col-md-6 pr-md-1">
+                                    <div class="form-group">
+                                        <label class="form-label {% if not current_user.email %} text-danger {% endif %}">Email
+                                            Address</label>
+                                        <input type="email" name="email" class="form-control"
+                                                {% if current_user.email %} readonly {% endif %}
+                                               placeholder="Your email Here"
+                                               value="{% if current_user.email %} {{ current_user.email }} {% endif %}">
+                                        <section class="display-error-message">
+                                        </section>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 pr-md-1">
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input type="text" class="form-control" value="{{ current_user.username }}"
+                                               readonly>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 pr-md-1">
+                                    <div class="form-group">
+                                        <label>First Name</label>
+                                        <input type="text" class="form-control" placeholder="Company" value="Mike">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 pl-md-1">
+                                    <div class="form-group">
+                                        <label>Last Name</label>
+                                        <input type="text" class="form-control" placeholder="Last Name" value="Andrew">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Address</label>
+                                        <input type="text" class="form-control" placeholder="Home Address"
+                                               value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 pr-md-1">
+                                    <div class="form-group">
+                                        <label>City</label>
+                                        <input type="text" class="form-control" placeholder="City" value="Mike">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 px-md-1">
+                                    <div class="form-group">
+                                        <label>Country</label>
+                                        <input type="text" class="form-control" placeholder="Country" value="Andrew">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 pl-md-1">
+                                    <div class="form-group">
+                                        <label>Postal Code</label>
+                                        <input type="number" class="form-control" placeholder="ZIP Code">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>About Me</label>
+                                        <textarea rows="4" cols="80" class="form-control"
+                                                  placeholder="Here can be your description" value="Mike">Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-fill btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
