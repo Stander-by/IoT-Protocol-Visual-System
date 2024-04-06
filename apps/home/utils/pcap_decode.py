@@ -147,14 +147,8 @@ class PcapDecode:
                 data['Procotol'] = self.PORT_DICT[tcp.sport]
             elif tcp.dport in self.TCP_DICT:
                 data['Procotol'] = self.TCP_DICT[tcp.dport]
-
                 if tcp.dport in IOT_port_dict:
-                    mqtt
-                    if tcp.seq == pre_seq + pre_payload_len:
-
-                    else:
-                        pre_seq = tcp.seq
-                        pre_payload_len = len(tcp.payload)
+                    data['seq'] = tcp.seq
                     data['others'] = tcp.payload
             elif tcp.sport in self.TCP_DICT:
                 data['Procotol'] = self.TCP_DICT[tcp.sport]
