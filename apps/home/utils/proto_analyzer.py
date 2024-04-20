@@ -31,14 +31,15 @@ def common_proto_statistic(PCAPS):
     common_proto_dict['IPv6'] = 0
     common_proto_dict['TCP'] = 0
     common_proto_dict['UDP'] = 0
-    common_proto_dict['ARP'] = 0
-    common_proto_dict['ICMP'] = 0
+    #common_proto_dict['ARP'] = 0
+    #common_proto_dict['ICMP'] = 0
     common_proto_dict['DNS'] = 0
     common_proto_dict['HTTP'] = 0
     common_proto_dict['HTTPS'] = 0
     common_proto_dict['MQTT'] = 0
     common_proto_dict['MQTT/SSL'] = 0
-    common_proto_dict['Others'] = 0
+    common_proto_dict['DICOM'] = 0
+    # common_proto_dict['Others'] = 0
 
     for pcap in PCAPS:
         if pcap.haslayer(IP):
@@ -49,11 +50,11 @@ def common_proto_statistic(PCAPS):
             common_proto_dict['TCP'] += 1
         elif pcap.haslayer(UDP):
             common_proto_dict['UDP'] += 1
-        if pcap.haslayer(ARP):
-            common_proto_dict['ARP'] += 1
-        elif pcap.haslayer(ICMP):
-            common_proto_dict['ICMP'] += 1
-        elif pcap.haslayer(DNS):
+        # if pcap.haslayer(ARP):
+        #     common_proto_dict['ARP'] += 1
+        # elif pcap.haslayer(ICMP):
+        #     common_proto_dict['ICMP'] += 1
+        if pcap.haslayer(DNS):
             common_proto_dict['DNS'] += 1
         elif pcap.haslayer(TCP):
             tcp = pcap.getlayer(TCP)
@@ -69,8 +70,11 @@ def common_proto_statistic(PCAPS):
                     common_proto_dict['MQTT'] += 1
                 elif dport == 8883 or sport == 8883:
                     common_proto_dict['MQTT/SSL'] += 1
-                else:
-                    common_proto_dict['Others'] += 1
+                # DICOM
+                elif dport == 4242 or sport == 4242 or dport == 104 or sport == 104:
+                    common_proto_dict['DICOM'] += 1
+                # else:
+                #     common_proto_dict['Others'] += 1
         elif pcap.haslayer(UDP):
             udp = pcap.getlayer(UDP)
             dport = udp.dport
@@ -137,6 +141,25 @@ def mqtt_statistic(PCAPS):
                         mqtt_dict[ip] = 1
     return mqtt_dict
 
+def dicom_statistic(PCAPS):
+    dicom_dict = dict()
+    for pcap in PCAPS:
+        if pcap.haslayer(TCP):
+            tcp = pcap.getlayer(TCP)
+            dport = tcp.dport
+            sport = tcp.sport
+            ip = None
+            if tcp.payload.name == 'Raw':
+                if dport == 4242 or 104:
+                    ip = pcap.getlayer(IP).dst
+                elif sport == 4242 or 104:
+                    ip = pcap.getlayer(IP).src
+                if ip:
+                    if ip in dicom_dict:
+                        dicom_dict[ip] += 1
+                    else:
+                        dicom_dict[ip] = 1
+    return dicom_dict
 
 # DNS协议统计
 def dns_statistic(PCAPS):

@@ -14,7 +14,7 @@ from .utils.pcap_decode import PcapDecode
 from .utils.pcap_filter import *
 from .utils.proto_analyzer import *
 from .utils.flow_analyzer import *
-from .utils.mqtt_analyzer import *
+from .utils.iot_analyzer import *
 from .utils.data_extract import *
 from .utils.ipmap import *
 
@@ -63,9 +63,9 @@ def upload():
             return render_template('home/index.html', segment='index')
 
 
-@blueprint.route('/mqtt_data_extract', methods=['POST', 'GET'])
+@blueprint.route('/iot_data_extract', methods=['POST', 'GET'])
 @login_required
-def mqtt_data_extract():
+def iot_data_extract():
     if PCAPS == None:
         flash("请先上传要分析的数据包!")
         return redirect(url_for('home_blueprint.upload'))
@@ -77,8 +77,17 @@ def mqtt_data_extract():
         for pcap in mqtt_pcap_list:
             if pcap['type'] == 'PUBLISH':
                 mqtt_publish_list.append(pcap)
-        return render_template('./dataextract/mqtt_data_extract.html', segment='mqtt_data_extract',
+        return render_template('./dataextract/iot_data_extract.html', segment='iot_data_extract',
                                mqtt_publish_list=mqtt_publish_list)
+
+@blueprint.route('/dicom_data_extract', methods=['POST', 'GET'])
+@login_required
+def dicom_data_extract():
+    if PCAPS == None:
+        lash("请先上传要分析的数据包!")
+        return redirect(url_for('home_blueprint.upload'))
+    else:
+        dicom_pcaps = proto_filter(u'proto','DICOM',PCAPS,PD)
 
 
 @blueprint.route('/database', methods=['POST', 'GET'])
@@ -128,11 +137,24 @@ def protoanalyzer():
         for key, value in mqtt_dict:
             mqtt_key_list.append(key)
             mqtt_value_list.append(value)
+
+        dicom_dict = dicom_statistic(PCAPS)
+        dicom_dict = sorted(dicom_dict.items(), key=lambda d: d[1], reverse=False)
+        dicom_key_list = list()
+        dicom_value_list = list()
+        for key, value in dicom_dict:
+            dicom_key_list.append(key)
+            dicom_value_list.append(value)
+
         dns_dict = dns_statistic(PCAPS)
         dns_dict = sorted(dns_dict.items(), key=lambda d: d[1], reverse=False)
+
+
         mqtt_pcaps = proto_filter(u'proto', 'MQTT', PCAPS, PD)
         mqtt_analyzer_pcaps = mqtt_decode(mqtt_pcaps)
         mqtt_pcap_list = list(mqtt_analyzer_pcaps.values())
+
+
         return render_template('./dataanalyzer/protoanalyzer.html', segment='protoanalyzer',
                                data=list(data_dict.values()),
                                pcap_len=list(pcap_len_dict.values()),
@@ -141,6 +163,8 @@ def protoanalyzer():
                                http_ip_value=http_value_list,
                                mqtt_ip_list=mqtt_key_list,
                                mqtt_ip_value=mqtt_value_list,
+                               dicom_ip_list=dicom_key_list,
+                               dicom_ip_value=dicom_value_list,
                                pcap_count=pcap_count_dict,
                                dns_dict=dns_dict,
                                mqtt_pcap_list=mqtt_pcap_list)

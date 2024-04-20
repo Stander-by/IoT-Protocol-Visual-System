@@ -114,7 +114,7 @@ def iot_proto_flow(PCAPS):
                 iot_proto_flow_dict['MQTT'] += pcap_len
             elif dport == 8883 or sport == 8883:
                 iot_proto_flow_dict['MQTT/SSL'] += pcap_len
-            elif dport == 104 or sport == 104 or dport == 110 or sport == 110:
+            elif dport == 104 or sport == 104 or dport == 4242 or sport == 4242:
                 iot_proto_flow_dict['DICOM'] += pcap_len
     return iot_proto_flow_dict
 

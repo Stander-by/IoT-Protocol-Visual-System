@@ -214,8 +214,10 @@
     // 假设您已经从后端或其他地方获取了数据
     var http_ip_data = {{ http_ip_list }};
     var mqtt_ip_data = {{ mqtt_ip_list }};
+    var dicom_ip_data = {{ dicom_ip_list }}
     var http_value_data = {{ http_ip_value }};
     var mqtt_value_data = {{ mqtt_ip_value }};
+    var dicom_value_data = {{ dicom_ip_value }};
 
     option1 = {
         tooltip: {
@@ -268,6 +270,13 @@
         option1.series[0].data = mqtt_value_data;
         option1.yAxis.data = mqtt_ip_data;
         option1.series[0].name = 'MQTT';
+        myChart1.setOption(option1); // 更新图表
+    });
+     $("#2").click(function () {
+        // 更新系列数据
+        option1.series[0].data = dicom_value_data;
+        option1.yAxis.data = dicom_ip_data;
+        option1.series[0].name = 'DICOM';
         myChart1.setOption(option1); // 更新图表
     });
 
@@ -349,7 +358,7 @@
         xAxis: [
             {
                 type: 'category',
-                data: ["IP", "IPv6", "TCP", "UDP", "ARP", "ICMP", "DNS", "HTTP", "HTTPS", "MQTT", "MQTT/SSL", "Others"],
+                data: ["IP", "IPv6", "TCP", "UDP", "DNS", "HTTP", "HTTPS", "MQTT", "MQTT/SSL",'DICOM'],
                 axisTick: {
                     alignWithLabel: true
                 },

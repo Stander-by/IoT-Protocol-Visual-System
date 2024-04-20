@@ -58,3 +58,5 @@ def mqtt_decode(mqtt_pcaps_dict):
             res_temp['message'] = mqtt_payload_dict
         res[count] = res_temp
     return res
+
+def dicom_decode(dicom_pcaps_dict):

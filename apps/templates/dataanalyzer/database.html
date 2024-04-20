@@ -15,7 +15,7 @@
                         <h4 class="card-title">MQTT Protocol Database</h4>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive" data-example-id="hoverable-table" style="height: 500px;">
+                        <div class="table-responsive" data-example-id="hoverable-table">
                             <table class="table tablesorter " id="">
                                 <thead class=" text-primary">
                                 <tr>
@@ -43,17 +43,29 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for count, pcap in mqtt_pcaps.items() %}
+                                {% if not mqtt_pcaps %}
                                     <tr data-toggle="modal" data-target="#myModal">
-                                        <th scope="row" class="text-center" id="id">{{ count }}</th>
-                                        <td class="text-nowrap text-center">{{ pcap['time'] }}</td>
-                                        <td class="text-center">{{ pcap['Source'] }}</td>
-                                        <td class="text-center">{{ pcap['Destination'] }}</td>
-                                        <td class="text-center text-nowrap">{{ pcap['Procotol'] }}</td>
-                                        <td class="text-center text-nowrap">{{ pcap['len'] }}</td>
-                                        <td class="text-left text-nowrap">{{ pcap['others'] }}</td>
+                                        <th scope="row" class="text-center" id="id">NULL</th>
+                                        <td class="text-nowrap text-center">NULL</td>
+                                        <td class="text-center">NULL</td>
+                                        <td class="text-center">NULL</td>
+                                        <td class="text-center text-nowrap">NULL</td>
+                                        <td class="text-center text-nowrap">NULL</td>
+                                        <td class="text-left text-nowrap">NULL</td>
                                     </tr>
-                                {% endfor %}
+                                {% else %}
+                                    {% for count, pcap in mqtt_pcaps.items() %}
+                                        <tr data-toggle="modal" data-target="#myModal">
+                                            <th scope="row" class="text-center" id="id">{{ count }}</th>
+                                            <td class="text-nowrap text-center">{{ pcap['time'] }}</td>
+                                            <td class="text-center">{{ pcap['Source'] }}</td>
+                                            <td class="text-center">{{ pcap['Destination'] }}</td>
+                                            <td class="text-center text-nowrap">{{ pcap['Procotol'] }}</td>
+                                            <td class="text-center text-nowrap">{{ pcap['len'] }}</td>
+                                            <td class="text-left text-nowrap">{{ pcap['others'] }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
                                 </tbody>
                             </table>
                         </div>
@@ -62,7 +74,7 @@
                         <h4 class="card-title">DICOM Protocol Database</h4>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive" data-example-id="hoverable-table" style="height: 500px;">
+                        <div class="table-responsive" data-example-id="hoverable-table">
                             <table class="table tablesorter " id="">
                                 <thead class=" text-primary">
                                 <tr>
@@ -90,17 +102,29 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for count, pcap in dicom_pcaps.items() %}
+                                {% if not dicom_pcaps %}
                                     <tr data-toggle="modal" data-target="#myModal">
-                                        <th scope="row" class="text-center" id="id">{{ count }}</th>
-                                        <td class="text-nowrap text-center">{{ pcap['time'] }}</td>
-                                        <td class="text-center">{{ pcap['Source'] }}</td>
-                                        <td class="text-center">{{ pcap['Destination'] }}</td>
-                                        <td class="text-center text-nowrap">{{ pcap['Procotol'] }}</td>
-                                        <td class="text-center text-nowrap">{{ pcap['len'] }}</td>
-                                        <td class="text-left text-nowrap">{{ pcap['others'] }}</td>
+                                        <th scope="row" class="text-center" id="id">NULL</th>
+                                        <td class="text-nowrap text-center">NULL</td>
+                                        <td class="text-center">NULL</td>
+                                        <td class="text-center">NULL</td>
+                                        <td class="text-center text-nowrap">NULL</td>
+                                        <td class="text-center text-nowrap">NULL</td>
+                                        <td class="text-left text-nowrap">NULL</td>
                                     </tr>
-                                {% endfor %}
+                                {% else %}
+                                    {% for count, pcap in dicom_pcaps.items() %}
+                                        <tr data-toggle="modal" data-target="#myModal">
+                                            <th scope="row" class="text-center" id="id">{{ count }}</th>
+                                            <td class="text-nowrap text-center">{{ pcap['time'] }}</td>
+                                            <td class="text-center">{{ pcap['Source'] }}</td>
+                                            <td class="text-center">{{ pcap['Destination'] }}</td>
+                                            <td class="text-center text-nowrap">{{ pcap['Procotol'] }}</td>
+                                            <td class="text-center text-nowrap">{{ pcap['len'] }}</td>
+                                            <td class="text-left text-nowrap">{{ pcap['others'] }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
                                 </tbody>
                             </table>
                         </div>
