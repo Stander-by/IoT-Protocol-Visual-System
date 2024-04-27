@@ -31,8 +31,8 @@ def common_proto_statistic(PCAPS):
     common_proto_dict['IPv6'] = 0
     common_proto_dict['TCP'] = 0
     common_proto_dict['UDP'] = 0
-    #common_proto_dict['ARP'] = 0
-    #common_proto_dict['ICMP'] = 0
+    # common_proto_dict['ARP'] = 0
+    # common_proto_dict['ICMP'] = 0
     common_proto_dict['DNS'] = 0
     common_proto_dict['HTTP'] = 0
     common_proto_dict['HTTPS'] = 0
@@ -81,12 +81,12 @@ def common_proto_statistic(PCAPS):
             sport = udp.sport
             if dport == 5353 or sport == 5353:
                 common_proto_dict['DNS'] += 1
-            else:
-                common_proto_dict['Others'] += 1
-        elif pcap.haslayer(ICMPv6ND_NS):
-            common_proto_dict['ICMP'] += 1
-        else:
-            common_proto_dict['Others'] += 1
+            # else:
+            #     common_proto_dict['Others'] += 1
+        # elif pcap.haslayer(ICMPv6ND_NS):
+        #     common_proto_dict['ICMP'] += 1
+        # else:
+        #     common_proto_dict['Others'] += 1
     return common_proto_dict
 
 
@@ -109,15 +109,16 @@ def http_statistic(PCAPS):
             dport = tcp.dport
             sport = tcp.sport
             ip = None
-            if dport == 80 or dport == 443:
-                ip = pcap.getlayer(IP).dst
-            elif sport == 80 or sport == 443:
-                ip = pcap.getlayer(IP).src
-            if ip:
-                if ip in http_dict:
-                    http_dict[ip] += 1
-                else:
-                    http_dict[ip] = 1
+            if tcp.payload.name == 'Raw':
+                if dport == 80 or dport == 443:
+                    ip = pcap.getlayer(IP).dst
+                elif sport == 80 or sport == 443:
+                    ip = pcap.getlayer(IP).src
+                if ip:
+                    if ip in http_dict:
+                        http_dict[ip] += 1
+                    else:
+                        http_dict[ip] = 1
     return http_dict
 
 
@@ -130,9 +131,9 @@ def mqtt_statistic(PCAPS):
             sport = tcp.sport
             ip = None
             if tcp.payload.name == 'Raw':
-                if dport == 1883:
+                if dport == 1883 or dport == 8883:
                     ip = pcap.getlayer(IP).dst
-                elif sport == 1883:
+                elif sport == 1883 or sport == 8883:
                     ip = pcap.getlayer(IP).src
                 if ip:
                     if ip in mqtt_dict:
@@ -140,6 +141,7 @@ def mqtt_statistic(PCAPS):
                     else:
                         mqtt_dict[ip] = 1
     return mqtt_dict
+
 
 def dicom_statistic(PCAPS):
     dicom_dict = dict()
@@ -150,9 +152,9 @@ def dicom_statistic(PCAPS):
             sport = tcp.sport
             ip = None
             if tcp.payload.name == 'Raw':
-                if dport == 4242 or 104:
+                if dport == 4242 or dport == 104:
                     ip = pcap.getlayer(IP).dst
-                elif sport == 4242 or 104:
+                elif sport == 4242 or dport == 104:
                     ip = pcap.getlayer(IP).src
                 if ip:
                     if ip in dicom_dict:
@@ -160,6 +162,7 @@ def dicom_statistic(PCAPS):
                     else:
                         dicom_dict[ip] = 1
     return dicom_dict
+
 
 # DNS协议统计
 def dns_statistic(PCAPS):

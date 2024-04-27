@@ -63,31 +63,39 @@ def upload():
             return render_template('home/index.html', segment='index')
 
 
-@blueprint.route('/iot_data_extract', methods=['POST', 'GET'])
+@blueprint.route('/mqtt_data_extract', methods=['POST', 'GET'])
 @login_required
-def iot_data_extract():
+def mqtt_data_extract():
     if PCAPS == None:
         flash("请先上传要分析的数据包!")
         return redirect(url_for('home_blueprint.upload'))
     else:
         mqtt_pcaps = proto_filter(u'proto', 'MQTT', PCAPS, PD)
-        mqtt_analyzer_pcaps = mqtt_decode(mqtt_pcaps)
-        mqtt_pcap_list = list(mqtt_analyzer_pcaps.values())
+        mqtt_analyzer_pcaps_value_list = mqtt_decode(mqtt_pcaps)
         mqtt_publish_list = list()
-        for pcap in mqtt_pcap_list:
+        for pcap in mqtt_analyzer_pcaps_value_list:
             if pcap['type'] == 'PUBLISH':
                 mqtt_publish_list.append(pcap)
-        return render_template('./dataextract/iot_data_extract.html', segment='iot_data_extract',
+        return render_template('./dataextract/mqtt_data_extract.html', segment='mqtt_data_extract',
                                mqtt_publish_list=mqtt_publish_list)
+
 
 @blueprint.route('/dicom_data_extract', methods=['POST', 'GET'])
 @login_required
 def dicom_data_extract():
     if PCAPS == None:
-        lash("请先上传要分析的数据包!")
+        flash("请先上传要分析的数据包!")
         return redirect(url_for('home_blueprint.upload'))
     else:
-        dicom_pcaps = proto_filter(u'proto','DICOM',PCAPS,PD)
+        dicom_pcaps = proto_filter(u'proto', 'DICOM', PCAPS, PD)
+        dicom_analyzer_pcaps_list = dicom_decode(dicom_pcaps)
+        # dicom_analyzer_pcaps_value_list = list(dicom_analyzer_pcaps.values())
+        # dicom_data_list = list()
+        # for pcapdicom in dicom_analyzer_pcaps_value_list:
+        #     if pcapdicom['PDU'] == 'P-DATA':
+        #         dicom_data_list.append(pcapdicom)
+    return render_template('./dataextract/dicom_data_extract.html', segment='dicom_data_extract',
+                           dicom_data_list=dicom_analyzer_pcaps_list)
 
 
 @blueprint.route('/database', methods=['POST', 'GET'])
@@ -108,9 +116,12 @@ def database():
         else:
             pcaps = get_all_pcap(PCAPS, PD)
             mqtt_pcaps_raw = proto_filter(u'proto', 'MQTT', PCAPS, PD)
+            mqtts_pcaps_raw = proto_filter(u'proto', 'MQTT/SSL', PCAPS, PD)
             dicom_pcaps_raw = proto_filter(u'proto', 'DICOM', PCAPS, PD)
         return render_template('./dataanalyzer/database.html', segment='database', pcaps=pcaps,
-                               mqtt_pcaps=mqtt_pcaps_raw, dicom_pcaps=dicom_pcaps_raw)
+                               mqtt_pcaps=mqtt_pcaps_raw,
+                               dicom_pcaps=dicom_pcaps_raw,
+                               mqtts_pcaps=mqtts_pcaps_raw)
 
 
 @blueprint.route('/protoanalyzer', methods=['POST', 'GET'])
@@ -149,11 +160,8 @@ def protoanalyzer():
         dns_dict = dns_statistic(PCAPS)
         dns_dict = sorted(dns_dict.items(), key=lambda d: d[1], reverse=False)
 
-
         mqtt_pcaps = proto_filter(u'proto', 'MQTT', PCAPS, PD)
         mqtt_analyzer_pcaps = mqtt_decode(mqtt_pcaps)
-        mqtt_pcap_list = list(mqtt_analyzer_pcaps.values())
-
 
         return render_template('./dataanalyzer/protoanalyzer.html', segment='protoanalyzer',
                                data=list(data_dict.values()),
@@ -167,7 +175,7 @@ def protoanalyzer():
                                dicom_ip_value=dicom_value_list,
                                pcap_count=pcap_count_dict,
                                dns_dict=dns_dict,
-                               mqtt_pcap_list=mqtt_pcap_list)
+                               mqtt_pcap_list=mqtt_analyzer_pcaps)
 
 
 @blueprint.route('/flowanalyzer', methods=['POST', 'GET'])

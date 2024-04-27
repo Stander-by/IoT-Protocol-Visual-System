@@ -23,12 +23,12 @@
                             <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
                                 <label class="btn btn-sm btn-primary btn-simple active" id="0">
                                     <input type="radio" name="options" checked>
-                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">HTTP</span>
+                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">HTTP(S)</span>
 
                                 </label>
                                 <label class="btn btn-sm btn-primary btn-simple" id="1">
                                     <input type="radio" class="d-none d-sm-none" name="options">
-                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">MQTT</span>
+                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">MQTT(S)</span>
 
                                 </label>
                                 <label class="btn btn-sm btn-primary btn-simple" id="2">
@@ -261,7 +261,7 @@
         // 更新系列数据
         option1.series[0].data = http_value_data;
         option1.yAxis.data = http_ip_data;
-        option1.series[0].name = 'HTTP';
+        option1.series[0].name = 'HTTP(S)';
         myChart1.setOption(option1); // 更新图表
     });
 
@@ -269,7 +269,7 @@
         // 更新系列数据
         option1.series[0].data = mqtt_value_data;
         option1.yAxis.data = mqtt_ip_data;
-        option1.series[0].name = 'MQTT';
+        option1.series[0].name = 'MQTT(S)';
         myChart1.setOption(option1); // 更新图表
     });
      $("#2").click(function () {
