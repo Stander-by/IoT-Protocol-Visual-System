@@ -30,6 +30,7 @@ def mqtt_decode(mqtt_pcaps_dict):
         res_temp['time'] = pcap['time']
         res_temp['Source'] = pcap['Source']
         res_temp['Destination'] = pcap['Destination']
+        res_temp['seq'] = pcap['seq']
         payload_data = pcap['others']
         payload_str = payload_data.load
         mqtt_head = payload_str[0]
@@ -47,13 +48,11 @@ def mqtt_decode(mqtt_pcaps_dict):
             if res_temp['QoS2'] == '00':
                 mqtt_flex_head = mqtt_topic_len + 2
             else:
-                #res_temp['Message_Identifier'] = int.from_bytes(payload_str[4 + mqtt_topic_len,6 + mqtt_topic_len],byteorder='big')
+                res_temp['Message_Identifier'] = int.from_bytes(payload_str[4 + mqtt_topic_len:6 + mqtt_topic_len],byteorder='big')
                 mqtt_flex_head = mqtt_topic_len + 4
             res_temp['Properties_len'] = payload_str[2 + mqtt_flex_head]
             mqtt_payload = payload_str[3 + mqtt_flex_head:2 + mqtt_res_len]
-            mqtt_payload_str = mqtt_payload.decode('utf-8')
-            mqtt_payload_dict = json.loads(mqtt_payload_str)
-            res_temp['message'] = mqtt_payload_dict
+            res_temp['message'] = mqtt_payload.decode('utf-8')
         res.append(res_temp)
     return res
 

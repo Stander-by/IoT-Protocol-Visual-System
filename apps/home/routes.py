@@ -2,6 +2,7 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+from scapy.layers.inet import TCP
 
 from apps.home import blueprint
 from flask import render_template, request, flash, redirect, url_for, send_from_directory
@@ -19,7 +20,7 @@ from .utils.data_extract import *
 from .utils.ipmap import *
 
 import os
-
+import time
 # from werkzeug import secure_filename
 
 UPLOAD_FOLDER = './pcaps/upload/'
@@ -27,7 +28,6 @@ FILE_FOLDER = './pcaps/files/'
 PDF_FOLDER = './pcaps/pdf/'
 PD = PcapDecode()  # 解析器
 PCAPS = None  # 数据包
-
 
 @blueprint.route('/index')
 @login_required
@@ -63,6 +63,59 @@ def upload():
             return render_template('home/index.html', segment='index')
 
 
+@blueprint.route('/update', methods=['POST', 'GET'])
+@login_required
+def update():
+    if PCAPS == None:
+        flash("请先上传要分析的数据包!")
+        return redirect(url_for('home_blueprint.upload'))
+    else:
+        if request.method == 'POST':
+            seq = request.form.get('seq')
+            for pkt in PCAPS:
+                print(pkt.getlayer(TCP).seq)
+                print(pkt.getlayer(TCP).payload)
+                if int(seq) == pkt.getlayer(TCP).seq:
+                    topic = request.form.get('topic')
+                    dup = request.form.get('dup')
+                    qos2 = request.form.get('QoS2')
+                    retain = request.form.get('retain')
+                    prolen = request.form.get('prolen')
+                    message = request.form.get('message')
+                    message = message.replace('\r', '')
+                    message_identifier = request.form.get('message_identifier')
+                    head_str = "0011" + dup + qos2 + retain
+                    head_int = int(head_str, 2)
+                    head_bytes = head_int.to_bytes(1, byteorder='big')
+                    topic_byte = topic.encode('utf-8')
+                    topic_len = len(topic_byte)
+                    topic_len_byte = topic_len.to_bytes(2, byteorder='big')
+                    message_byte = message.encode('utf-8')
+                    prolen_byte = int(prolen).to_bytes(1, byteorder='big')
+                    if message_identifier != '':
+                        message_identifier_int = int(message_identifier)
+                        message_identifier_byte = message_identifier_int.to_bytes(2, byteorder='big')
+                        msg_len = len(topic_len_byte) + topic_len + len(message_byte) + len(prolen_byte) + len(message_identifier_byte)
+                        msg_len_byte = msg_len.to_bytes(1, byteorder='big')
+                        new_payload = b''.join(
+                            [head_bytes, msg_len_byte, topic_len_byte, topic_byte, message_identifier_byte, prolen_byte,
+                             message_byte])
+                    else:
+                        msg_len = len(topic_len_byte) + topic_len + len(message_byte) + len(prolen_byte)
+                        msg_len_byte = msg_len.to_bytes(2, byteorder='big')
+                        new_payload = b''.join([head_bytes, msg_len_byte, topic_len_byte, topic_byte, prolen_byte, message_byte])
+                    pkt.getlayer(TCP).payload = new_payload
+                    print(pkt.getlayer(TCP).payload)
+                    break
+            return redirect('/mqtt_data_extract')
+        elif request.method == 'GET':
+            return 'Save'
+
+    # New_PCAP =[]
+    # for pkt in PCAPS:
+    #     if
+
+
 @blueprint.route('/mqtt_data_extract', methods=['POST', 'GET'])
 @login_required
 def mqtt_data_extract():
@@ -72,12 +125,12 @@ def mqtt_data_extract():
     else:
         mqtt_pcaps = proto_filter(u'proto', 'MQTT', PCAPS, PD)
         mqtt_analyzer_pcaps_value_list = mqtt_decode(mqtt_pcaps)
-        mqtt_publish_list = list()
-        for pcap in mqtt_analyzer_pcaps_value_list:
-            if pcap['type'] == 'PUBLISH':
-                mqtt_publish_list.append(pcap)
+        # mqtt_publish_list = list()
+        # for pcap in mqtt_analyzer_pcaps_value_list:
+        #     if pcap['type'] == 'PUBLISH':
+        #         mqtt_publish_list.append(pcap)
         return render_template('./dataextract/mqtt_data_extract.html', segment='mqtt_data_extract',
-                               mqtt_publish_list=mqtt_publish_list)
+                               mqtt_pcaps_list=mqtt_analyzer_pcaps_value_list)
 
 
 @blueprint.route('/dicom_data_extract', methods=['POST', 'GET'])
