@@ -1,0 +1,248 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} User Profile {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="row">
+            {% if dicom_data_list %}
+                {% for pcap in dicom_data_list %}
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="title">{{ pcap['PDU_type'] }}</h5>
+                            </div>
+                            {% if pcap['PDU_type'] == 'A-ASSOC-Request' or pcap['PDU_type'] == 'A-ASSOC-Accept' %}
+                                <div class="card-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 pr-md-1">
+                                                <div class="form-group">
+                                                    <label class="form-label">Time</label>
+                                                    <input type="text" name="email" class="form-control" readonly
+                                                           value="{{ pcap['time'] }}">
+                                                    <section class="display-error-message">
+                                                    </section>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>Stream</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['info'] }}"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>PDU_type</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['PDU_type'] }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>PDU_len</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['PDU_len'] }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-2 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>Protocol_version</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['Protocol_ver'] }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>Called AE Title</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['Called_AE_Title'] }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>Calling AE Title</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['Calling_AE_Title'] }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% for name, info in pcap['Context'].items() %}
+                                            <div class="row">
+                                                <div class="col-md-4 pr-md-1">
+                                                    <div class="form-group">
+                                                        <label>Context Type</label>
+                                                        <input type="text" class="form-control"
+                                                               value="{{ name }}">
+                                                    </div>
+                                                </div>
+                                                {% for inname,ininfo in info.items() %}
+                                                    {% if inname == 'DICOM_Application_Context_Name' or inname == 'Abstract_Syntax' or inname == 'Transfer_Syntax' or inname == 'Implementation_Class_UID' or inname == 'Implementation_Version' %}
+                                                        <div class="col-md-2 pr-md-1">
+                                                            <div class="form-group">
+                                                                <label>{{ inname }}</label>
+                                                                <input type="text" class="form-control"
+                                                                       value="{{ ininfo }}">
+                                                            </div>
+                                                        </div>
+                                                    {% elif inname == 'Context_ID' or inname == 'Max_Length' or inname == 'Result' %}
+                                                        <div class="col-md-1 pr-md-1">
+                                                            <div class="form-group">
+                                                                <label>{{ inname }}</label>
+                                                                <input type="text" class="form-control"
+                                                                       value="{{ ininfo }}">
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endfor %}
+                                    </form>
+                                </div>
+                            {% elif pcap['PDU_type'] == 'P-Data' %}
+                                <div class="card-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 pr-md-1">
+                                                <div class="form-group">
+                                                    <label class="form-label">Time</label>
+                                                    <input type="email" name="email" class="form-control" readonly
+                                                           value="{{ pcap['time'] }}">
+                                                    <section class="display-error-message">
+                                                    </section>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>Stream</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['info'] }}"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>PDU_type</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['PDU_type'] }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>PDU_len</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['PDU_len'] }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>PDV_Length</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['Context']['PDV_Length'] }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>PDV_Context</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['Context']['Context'] }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>Flags</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['Context']['Flags'] }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>Message</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['Context']['PDV_Context'] }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            {% else %}
+                                <div class="card-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 pr-md-1">
+                                                <div class="form-group">
+                                                    <label class="form-label">Time</label>
+                                                    <input type="email" name="email" class="form-control" readonly
+                                                           value="{{ pcap['time'] }}">
+                                                    <section class="display-error-message">
+                                                    </section>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>Stream</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['info'] }}"
+                                                           readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>PDU_type</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['PDU_type'] }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 pr-md-1">
+                                                <div class="form-group">
+                                                    <label>PDU_len</label>
+                                                    <input type="text" class="form-control"
+                                                           value="{{ pcap['PDU_len'] }}">
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="title">DICOM PCAPS DONT EXIST</h3>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-link btn-primary" id="search-button" data-toggle="modal" type="submit"
+                                    data-target="#searchModal">Upload</button>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
