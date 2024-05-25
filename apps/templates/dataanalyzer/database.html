@@ -76,6 +76,17 @@
                                             <td class="text-left text-nowrap">{{ pcap['others'] }}</td>
                                         </tr>
                                     {% endfor %}
+                                    {% for count, pcap in mqtts_pcaps.items() %}
+                                        <tr data-toggle="modal" data-target="#myModal">
+                                            <th scope="row" class="text-center" id="id">{{ count }}</th>
+                                            <td class="text-nowrap text-center">{{ pcap['time'] }}</td>
+                                            <td class="text-center">{{ pcap['Source'] }}</td>
+                                            <td class="text-center">{{ pcap['Destination'] }}</td>
+                                            <td class="text-center text-nowrap">{{ pcap['Procotol'] }}</td>
+                                            <td class="text-center text-nowrap">{{ pcap['len'] }}</td>
+                                            <td class="text-left text-nowrap">{{ pcap['others'] }}</td>
+                                        </tr>
+                                    {% endfor %}
                                 {% endif %}
                                 </tbody>
                             </table>
@@ -146,7 +157,6 @@
                 <div class="card  card-plain">
                     <div class="card-header">
                         <h4 class="card-title"> Web Protocol Database</h4>
-                        <p class="category"> Here is a subtitle for this table</p>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive" data-example-id="hoverable-table" style="height: 700px;">

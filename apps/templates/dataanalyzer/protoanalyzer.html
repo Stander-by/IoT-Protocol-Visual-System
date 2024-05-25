@@ -23,12 +23,12 @@
                             <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
                                 <label class="btn btn-sm btn-primary btn-simple active" id="0">
                                     <input type="radio" name="options" checked>
-                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">HTTP(S)</span>
+                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">HTTP</span>
 
                                 </label>
                                 <label class="btn btn-sm btn-primary btn-simple" id="1">
                                     <input type="radio" class="d-none d-sm-none" name="options">
-                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">MQTT(S)</span>
+                                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">MQTT</span>
 
                                 </label>
                                 <label class="btn btn-sm btn-primary btn-simple" id="2">
@@ -134,12 +134,8 @@
                                                 RETAIN:{{ pcap['RETAIN'] }}
                                                 </p>
                                                 <p class="text-info">
-                                                {
-                                                <br>
-                                                {% for key,value in pcap['message'].items() %}
-                                                    &nbsp; {{ key }} : {{ value }} <br>
-                                                {% endfor %}
-                                                }
+                                                {{pcap['message']}}
+                                                </p>
                                             {% endif %}
                                             </p>
                                     </td>
@@ -261,7 +257,7 @@
         // 更新系列数据
         option1.series[0].data = http_value_data;
         option1.yAxis.data = http_ip_data;
-        option1.series[0].name = 'HTTP(S)';
+        option1.series[0].name = 'HTTP';
         myChart1.setOption(option1); // 更新图表
     });
 
@@ -269,10 +265,10 @@
         // 更新系列数据
         option1.series[0].data = mqtt_value_data;
         option1.yAxis.data = mqtt_ip_data;
-        option1.series[0].name = 'MQTT(S)';
+        option1.series[0].name = 'MQTT';
         myChart1.setOption(option1); // 更新图表
     });
-     $("#2").click(function () {
+    $("#2").click(function () {
         // 更新系列数据
         option1.series[0].data = dicom_value_data;
         option1.yAxis.data = dicom_ip_data;
@@ -358,7 +354,7 @@
         xAxis: [
             {
                 type: 'category',
-                data: ["IP", "IPv6", "TCP", "UDP", "DNS", "HTTP", "HTTPS", "MQTT", "MQTT/SSL",'DICOM'],
+                data: ["IP", "IPv6", "TCP", "UDP", "DNS", "HTTP", "HTTPS", "MQTT", "MQTT/SSL", 'DICOM'],
                 axisTick: {
                     alignWithLabel: true
                 },

@@ -112,7 +112,7 @@
                     </div>
                 {% endfor %}
                 <div class="card-footer">
-                    <form method="GET">
+                    <form method="GET" action="{{ url_for('home_blueprint.update') }}">
                         <button type="submit" class="btn btn-fill btn-primary">Save</button>
                     </form>
                 </div>
