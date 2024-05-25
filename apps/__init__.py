@@ -11,11 +11,6 @@ from flask_caching import Cache
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-cache_config = {
-    'CACHE_TYPE': 'redis',  # 使用redis作为缓存
-    'CACHE_REDIS_HOST': '127.0.0.1',  # redis地址
-    'CACHE_REDIS_PORT': 6379  # redis端口号
-}
 
 
 def register_extensions(app):
@@ -43,10 +38,8 @@ from apps.authentication.oauth import github_blueprint
 
 def create_app(config):
     app = Flask(__name__)
-    cache = Cache(app=app, config=cache_config)
     app.config.from_object(config)
     register_extensions(app)
-
     app.register_blueprint(github_blueprint, url_prefix="/login")
     
     register_blueprints(app)
