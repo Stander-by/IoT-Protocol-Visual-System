@@ -24,11 +24,12 @@ import time
 # from werkzeug import secure_filename
 
 UPLOAD_FOLDER = './pcaps/upload/'
+OUT_FOLDER = './pcaps/out/'
 FILE_FOLDER = './pcaps/files/'
 PDF_FOLDER = './pcaps/pdf/'
 PD = PcapDecode()  # 解析器
 PCAPS = None  # 数据包
-
+NEW_PCAPS = None
 @blueprint.route('/index')
 @login_required
 def index():
@@ -48,11 +49,12 @@ def upload():
         if allowed_file(pcapname):
             name1 = random_name()
             name2 = get_filetype(pcapname)
-            global PCAP_NAME, PCAPS
+            global PCAP_NAME, PCAPS,NEW_PCAPS
             PCAP_NAME = name1 + name2
             try:
                 pcap.save(os.path.join(filepath, PCAP_NAME))
                 PCAPS = rdpcap(os.path.join(filepath, PCAP_NAME))
+                NEW_PCAPS = rdpcap(os.path.join(filepath, PCAP_NAME))
                 flash('恭喜你,上传成功！')
                 return render_template('home/index.html', segment='index')
             except Exception as e:
@@ -72,9 +74,7 @@ def update():
     else:
         if request.method == 'POST':
             seq = request.form.get('seq')
-            for pkt in PCAPS:
-                print(pkt.getlayer(TCP).seq)
-                print(pkt.getlayer(TCP).payload)
+            for pkt in NEW_PCAPS:
                 if int(seq) == pkt.getlayer(TCP).seq:
                     topic = request.form.get('topic')
                     dup = request.form.get('dup')
@@ -104,16 +104,25 @@ def update():
                         msg_len = len(topic_len_byte) + topic_len + len(message_byte) + len(prolen_byte)
                         msg_len_byte = msg_len.to_bytes(2, byteorder='big')
                         new_payload = b''.join([head_bytes, msg_len_byte, topic_len_byte, topic_byte, prolen_byte, message_byte])
-                    pkt.getlayer(TCP).payload = new_payload
+
+                    pkt.getlayer(TCP).payload.load = new_payload
                     print(pkt.getlayer(TCP).payload)
                     break
-            return redirect('/mqtt_data_extract')
+            return redirect(url_for('home_blueprint.mqtt_data_extract'))
         elif request.method == 'GET':
-            return 'Save'
+            filepath = OUT_FOLDER
+            outname = random_name() + ".pcap"
+            print(NEW_PCAPS)
+            wrpcap(os.path.join(filepath, outname), NEW_PCAPS)
+            flash("修改报文保存到"+outname)
+            return redirect(url_for('home_blueprint.upload'))
 
     # New_PCAP =[]
     # for pkt in PCAPS:
     #     if
+
+
+
 
 
 @blueprint.route('/mqtt_data_extract', methods=['POST', 'GET'])
